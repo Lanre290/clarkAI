@@ -1,0 +1,53 @@
+.logo-text{
+    font-family: cursive;
+}
+
+.operation-tile{
+    position: relative;
+    transition: 0.3s;
+}
+
+.operation-tile:active{
+    transform: rotateX(5deg);
+}
+.operation-tile:hover{
+    scale: 1.04;
+}
+
+.operation-tile .arrow{
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    transition: 0.3s;
+}
+.operation-tile:hover .arrow{
+    transform: rotateZ(45deg);
+    scale: 1.1;
+}
+
+.message-from{
+    border-top-right-radius: 32px;
+    border-top-left-radius: 32px;
+    border-bottom-right-radius: 32px;
+    border-bottom-left-radius: 10px;
+}
+
+.typing-dot{
+    bottom: 10px;
+    transform: translateY(0%);
+    animation: typing 1.15s infinite;
+}
+
+@keyframes typing {
+    0% {
+        transform: translateY(0%);
+    }
+
+    50%{
+        transform: translateY(-100%);
+    }
+
+    100%{
+        transform: translateY(0%);
+    }
+}
