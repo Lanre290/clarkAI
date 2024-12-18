@@ -1,53 +1,76 @@
-.logo-text{
-    font-family: cursive;
+pre {
+  white-space: pre-wrap; /* Allow text to wrap */
+  word-wrap: break-word; /* Break long words to prevent overflow */
 }
 
-.operation-tile{
-    position: relative;
-    transition: 0.3s;
+.logo-text {
+  font-family: cursive;
 }
 
-.operation-tile:active{
-    transform: rotateX(5deg);
-}
-.operation-tile:hover{
-    scale: 1.04;
+.operation-tile {
+  position: relative;
+  transition: 0.3s;
 }
 
-.operation-tile .arrow{
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    transition: 0.3s;
+.operation-tile:active {
+  transform: rotateX(5deg);
 }
-.operation-tile:hover .arrow{
-    transform: rotateZ(45deg);
-    scale: 1.1;
+.operation-tile:hover {
+  scale: 1.04;
 }
 
-.message-from{
-    border-top-right-radius: 32px;
-    border-top-left-radius: 32px;
-    border-bottom-right-radius: 32px;
-    border-bottom-left-radius: 10px;
+.operation-tile .arrow {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  transition: 0.3s;
+}
+.operation-tile:hover .arrow {
+  transform: rotateZ(45deg);
+  scale: 1.1;
 }
 
-.typing-dot{
-    bottom: 10px;
-    transform: translateY(0%);
-    animation: typing 1.15s infinite;
+.message-from {
+  border-top-right-radius: 32px;
+  border-top-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+  border-bottom-left-radius: 10px;
+}
+
+.signup-background {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    to bottom right,
+    rgba(147, 51, 234, 0.8),
+    rgba(0, 0, 0, 0.8)
+  );
+  min-height: 100vh;
+}
+
+.typing-dot {
+  bottom: 10px;
+  transform: translateY(0%);
+  animation: typing 1.15s infinite;
 }
 
 @keyframes typing {
-    0% {
-        transform: translateY(0%);
-    }
+  0% {
+    transform: translateY(0%);
+  }
 
-    50%{
-        transform: translateY(-100%);
-    }
+  50% {
+    transform: translateY(-100%);
+  }
 
-    100%{
-        transform: translateY(0%);
-    }
+  100% {
+    transform: translateY(0%);
+  }
 }

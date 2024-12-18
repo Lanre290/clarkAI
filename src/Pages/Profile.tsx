@@ -4,6 +4,9 @@ const Profile = () => {
     return(
         <>
             <Header></Header>
+            <div className="flex flex-col">
+                
+            </div>
         </>
     )
 }
