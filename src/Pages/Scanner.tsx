@@ -14,7 +14,7 @@ const Scanner = () => {
   const [resultText, setResultText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const queryText =
-    "The uploaded image is clear. you must extract and solve questions or content from the image, or guide the student effectively.";
+    "What is in this picture?";
 
   const generativeFile = async (file: File) => {
     return new Promise<{ data: string; mimeType: string }>((resolve, reject) => {
