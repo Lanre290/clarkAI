@@ -101,7 +101,7 @@ const Chat = () => {
   
   return (
     <div className="w-full h-full flex flex-row chat-page">
-      <div className="flex flex-col h-screen w-72 overflow-y-auto bg-gray-100">
+      <div className="hidden md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100">
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
           <Link
             to={"/home"}
@@ -135,10 +135,18 @@ const Chat = () => {
       </div>
 
       <div className="flex flex-col w-full h-screen md:w-3/6 mx-auto justify-center items-center relative py-14">
-        <div className="flex flex-row items-center justify-end w-full absolute right-5 top-2">
-          <button className="cursor-pointer" title="My profile">
-            <PiUserCircleThin className="text-black text-5xl font-light"></PiUserCircleThin>
-          </button>
+        <div className="flex flex-row items-center justify-between md:justify-end w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
+        <Link to={'/home'} className="md:hidden">
+            <button className="cursor-pointer" title="My profile">
+              <BsHouse className="text-black text-5xl font-light"></BsHouse>
+            </button>
+          </Link>
+
+          <Link to={'/profile'}>
+            <button className="cursor-pointer" title="My profile">
+              <PiUserCircleThin className="text-black text-5xl font-light"></PiUserCircleThin>
+            </button>
+          </Link>
         </div>
 
         {

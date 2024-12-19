@@ -147,7 +147,7 @@ const Home = () => {
             </h3>
           </div>
 
-          <div className="flex tilt-cont w-96 mx-auto px-0">
+          <div className="flex tilt-cont w-96 mx-auto md:mx-0 px-0">
           <Tilt option={reactTiltOptions}>
             <div className="flex flex-col w-full mx-3 md:mx-0 md:w-96 rounded-br-2xl rounded-bl-2xl relative">
               <img

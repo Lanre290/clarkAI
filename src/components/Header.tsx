@@ -59,11 +59,11 @@ const Header = () => {
             </div>
 
 
-            <div className="flex flex-row justify-center items-center mr-16 gap-x-3">
+            <div className="flex flex-row justify-center items-center mr-2 md:mr-16 gap-x-3">
                 <div id="google_translate_element"></div>
                 <button className="bg-black text-white rounded-3xl cursor-pointer flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl">
                     <PiCrownBold className="text-2xl"></PiCrownBold>
-                    Go premium
+                    <h3 className="hidden md:flex">Go premium</h3>
                 </button>
                 <Link to={'/profile'}>
                     <button className="cursor-pointer" title="My profile">

@@ -25,8 +25,8 @@ const Profile = () => {
             </div>                
 
 
-                <div className="flex flex-col md:flex-row md:w-2/3 lg:w-2/4 mx-auto gap-5 mt-10">
-                    <div className="w-1/2 rounded-3xl bg-blue-300 text-white h-64">
+                <div className="flex flex-col w-full px-2 items-center md:flex-row md:w-2/3 lg:w-2/4 mx-auto gap-5 mt-10 pb-20 md:pb-0">
+                    <div className="w-full mx-2 md:w-1/2 rounded-3xl bg-blue-300 text-white h-64">
                         <h3 className="text-white text-start w-11/12 h-full flex items-center text-xl mx-auto">
                             Nationality: {user?.user.country as string}<br />
                             Streak: {streakDays} days
@@ -34,7 +34,7 @@ const Profile = () => {
                     </div>
 
 
-                    <div className="w-1/2 rounded-3xl bg-purple-300 text-white h-64">
+                    <div className="w-full mx-2 md:w-1/2 rounded-3xl bg-purple-300 text-white h-64">
                     </div>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const ChooseOperation = () => {
   return (
-    <div className="flex flex-col md:flex-wrap w-full lg:w-5/6 mx-auto py-8 justify-center">
+    <div className="flex flex-col md:flex-row md:flex-wrap w-full lg:w-5/6 mx-auto py-8 justify-center">
       <Link 
         className="w-full mx-2 md:w-auto md:mx-0" mt-1
         to={'/upload-pdf'}>
