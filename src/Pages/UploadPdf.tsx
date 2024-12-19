@@ -1,4 +1,4 @@
-import { PiArrowUpBold, PiUpload, PiWaveform } from "react-icons/pi";
+import { PiArrowUpBold, PiHouseSimpleThin, PiUpload, PiWaveform } from "react-icons/pi";
 import Header from "../components/Header";
 import { useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -9,6 +9,7 @@ import Lottie from "react-lottie";
 import loadingAnimationData from "./../assets/animations/loadingAnimation2.json";
 import { genAI } from "../script";
 import suggestQuestion from "../script";
+import { Link } from "react-router-dom";
 
 export interface messageInterface {
   fromUser: boolean;
@@ -168,6 +169,9 @@ const UploadPdf = () => {
           style={{ height: divHeight }}
         >
           <div className="flex flex-row items-center justify-start mt-7 ml-10 gap-x-3">
+          <Link to={'/home'} className="p-4 cursor-pointer">
+                <PiHouseSimpleThin className="text-black text-5xl"></PiHouseSimpleThin>
+            </Link>
             <button className="bg-black text-white rounded-3xl cursor-pointer flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl relative">
               <PiUpload className="text-2xl"></PiUpload>
               upload PDF

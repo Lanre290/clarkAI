@@ -1,6 +1,7 @@
 import { PiRobotThin } from "react-icons/pi";
 import googleImage from './../assets/images/google.png';
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
     const [countries, setCountries] = useState([]);
@@ -28,8 +29,8 @@ const Login = () => {
         loadCountries();
       }, []);
     return (
-        <div className="flex flex-col w-screen h-screen bg-black bg-opacity-30">
-            <form action="" className="flex flex-col w-full md:w-2/4 lg:w-1/3 bg-gray-50 rounded-3xl bg-opacity-90 justify-center items-center p-6 m-auto">
+        <div className="flex flex-col w-screen h-screen bg-white">
+            <form action="" className="flex flex-col w-full md:w-2/4 lg:w-1/3 bg-white rounded-3xl bg-opacity-90 justify-center items-center p-6 m-auto">
                 <div className="flex flex-row">
                     <PiRobotThin className="text-5xl"></PiRobotThin>
                     <h3 className="font-light text-black text-5xl logo-text">Clark</h3>
@@ -45,7 +46,10 @@ const Login = () => {
                     <input type="email" className="p-4 w-full border border-black rounded-2xl" placeholder="Email..." required />
                     <input type="password" className="p-4 w-full border border-black rounded-2xl" placeholder="Password..." required />
 
-                    <button type="submit" className="w-full bg-blue-600 text-white cursor-pointer rounded-3xl h-12 mt-10">Submit</button>
+                    <Link to='/signup' className="mt-10">
+                      <h3 className="text-black underline cursor-pointer text-center">Don't have an account? Sign up</h3>
+                    </Link>
+                    <button type="submit" className="w-full bg-black text-white cursor-pointer rounded-3xl h-16 mt-2">Submit</button>
                 </div>
             </form>
         </div>

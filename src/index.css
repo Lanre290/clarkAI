@@ -3,6 +3,10 @@ pre {
   word-wrap: break-word; /* Break long words to prevent overflow */
 }
 
+body{
+  overflow-y: hidden;
+}
+
 .logo-text {
   font-family: cursive;
 }
@@ -93,4 +97,74 @@ pre {
 
 .chat-inner-area::-webkit-scrollbar-track {
   background: transparent;
+}
+
+
+
+/* Customize the Translate Widget */
+.goog-te-menu-value {
+  font-size: 14px;
+  font-weight: 600;
+  background-color: #2d3748;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.goog-te-menu-value:hover {
+  background-color: #4a5568;
+}
+
+.goog-te-banner-frame {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background-color: #1a202c;
+}
+
+.goog-te-menu2 {
+  background-color: #2d3748;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.goog-te-menu2-item {
+  color: white;
+  padding: 8px 12px;
+}
+
+.goog-te-menu2-item:hover {
+  background-color: #4a5568;
+}
+
+.goog-te-gadget-simple{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  height: 55px; 
+  font-size: 18px;
+  padding: 12px;
+  font-weight: light;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#google_translate_element{
+  height: 45px;
+  border-radius: 12px;
+}
+
+.VIpgJd-ZVi9od-vH1Gmf-ibnC6b div .text{
+  color: black;
+  font-size: 15px;
+}
+
+.VIpgJd-ZVi9od-vH1Gmf-ibnC6b div .indicator {
+  display: none;
 }

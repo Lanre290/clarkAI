@@ -115,7 +115,7 @@ const Chat = () => {
           {
             previousChats.map((chat) => {
               return(
-                <div className="w-11/12 m-2 rounded-2xl bg-gray-200 items-center p-2 cursor-pointer hover:bg-gray-300" onClick={() => {
+                <div className="w-11/12 m-2 rounded-2xl bg-gray-200 items-center p-2 cursor-pointer hover:bg-gray-300 truncate" onClick={() => {
                   setMessages(chat.messages)
                 }}>{chat.title}</div>
               )
@@ -201,7 +201,7 @@ const Chat = () => {
                   );
                 }}
               >
-                {suggestedQuestion}
+                <ReactMarkdown>{suggestedQuestion}</ReactMarkdown>
               </div>
             )}
           </div>

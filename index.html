@@ -5,9 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ClarkAI</title>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   </head>
   <body>
     <div id="root"></div>
+
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,es,fr,de,it,pt,zh,ja,ko,ar,ru,hi,sw',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE, 
+          autoDisplay: false 
+        }, 'google_translate_element');
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const ChooseOperation = () => {
   return (
-    <div className="flex flex-wrap w-full lg:w-5/6 mx-auto py-2 md:py-28 justify-center">
+    <div className="flex flex-wrap w-full lg:w-5/6 mx-auto py-8 justify-center">
       <Link to={'/upload-pdf'}>
         <OperationTile
           icon={<PiUploadThin className="text-7xl text-black mx-auto" />}
