@@ -1,9 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { BiEdit } from "react-icons/bi";
 import {
   PiArrowUpBold,
-  PiHouseLight,
   PiUserCircleThin,
   PiWaveform,
 } from "react-icons/pi";
@@ -13,7 +12,8 @@ import { toast } from "react-toastify";
 import suggestQuestion from "../script";
 import ReactMarkdown from "react-markdown";
 import { genAI } from "../script";
-
+import { useUser } from "../context/UserContext";
+import { BsHouse } from "react-icons/bs";
 
 
 const Chat = () => {
@@ -22,7 +22,17 @@ const Chat = () => {
   const [messages, setMessages] = useState<messageInterface[]>([]);
   const [suggestedQuestion, setSuggestedQuestion] = useState<string>("");
   const [previousChats, setPreviousChats] = useState<any[]>([]);
+  const [name, setName] = useState<string>('');
   const chatArea = useRef(null);
+
+  const {user} = useUser();
+  
+
+  useEffect(() => {
+    setName(user?.user.name as string);
+  
+  }, [])
+  
 
 
 
@@ -47,7 +57,7 @@ const Chat = () => {
     const AISuggestedQuestion = suggestQuestion(dependencies);
     const newQuestion = await AISuggestedQuestion;
     if (suggestedQuestion != newQuestion) {
-      setSuggestedQuestion(newQuestion); //check if there was an erro generating question
+      setSuggestedQuestion(newQuestion); //check if there was an error generating question
     }
   };
 
@@ -90,16 +100,16 @@ const Chat = () => {
   }
   
   return (
-    <div className="w-full h-full flex flex-row">
+    <div className="w-full h-full flex flex-row chat-page">
       <div className="flex flex-col h-screen w-72 overflow-y-auto bg-gray-100">
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
           <Link
             to={"/home"}
           >
-            <PiHouseLight
+            <BsHouse
               className="text-black cursor-pointer text-4xl"
               title="Home"
-            ></PiHouseLight>
+            ></BsHouse>
           </Link>
 
           <div className="flex flex-row" onClick={() => {
@@ -134,7 +144,7 @@ const Chat = () => {
         {
           messages.length == 0 && (
             <h3 className="text-4xl text-black my-10 text-center">
-              Hello Sheriff, What can i help you with today?
+              Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name}, What can i help you with today?
             </h3>
           )
         }

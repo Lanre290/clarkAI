@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 
 const ChooseOperation = () => {
   return (
-    <div className="flex flex-wrap w-full lg:w-5/6 mx-auto py-8 justify-center">
-      <Link to={'/upload-pdf'}>
+    <div className="flex flex-col md:flex-wrap w-full lg:w-5/6 mx-auto py-8 justify-center">
+      <Link 
+        className="w-full mx-2 md:w-auto md:mx-0" mt-1
+        to={'/upload-pdf'}>
         <OperationTile
           icon={<PiUploadThin className="text-7xl text-black mx-auto" />}
           text={`Upload PDF`}
@@ -13,6 +15,7 @@ const ChooseOperation = () => {
       </Link>
 
       <Link
+        className="w-full mx-2 md:w-auto md:mx-0 mt-1"
         to={'/chat'}
         >
         <OperationTile
@@ -22,6 +25,7 @@ const ChooseOperation = () => {
       </Link>
 
       <Link
+        className="w-full mx-2 md:w-auto md:mx-0 mt-1"
         to={'/scanner'}
         >
         <OperationTile

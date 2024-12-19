@@ -1,4 +1,8 @@
-import { PiArrowUpBold, PiHouseSimpleThin, PiUpload, PiWaveform } from "react-icons/pi";
+import {
+  PiArrowUpBold,
+  PiUpload,
+  PiWaveform,
+} from "react-icons/pi";
 import Header from "../components/Header";
 import { useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -10,6 +14,8 @@ import loadingAnimationData from "./../assets/animations/loadingAnimation2.json"
 import { genAI } from "../script";
 import suggestQuestion from "../script";
 import { Link } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import { BsHouse } from "react-icons/bs";
 
 export interface messageInterface {
   fromUser: boolean;
@@ -45,13 +51,20 @@ const UploadPdf = () => {
     "You are an educational assistant and study buddy. Summarize the content of this document, focusing on the key points and main ideas. Provide a concise overview that captures the essence of the document and also aids the student you are helping while leaving out unnecessary details"
   );
   const [suggestedQuestion, setSuggestedQuestion] = useState<string>("");
+  const [name, setName] = useState<string>("");
+
+  const { user } = useUser();
+
+  useEffect(() => {
+    setName(user?.user.name as string);
+  }, []);
 
   const handleAI = async (file: any) => {
     setIsLoadingPDF(true);
     pdfToText(file)
       .then(async (text) => {
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result_ = await model.generateContent([queryText, text]); // TO-DO: add safety setting
+        const result_ = await model.generateContent([queryText, text]);
         const response = await result_.response;
         const aiText = await response.text();
         aiText.substring(7, aiText.length - 3);
@@ -60,9 +73,9 @@ const UploadPdf = () => {
         setIsLoadingPDF(false);
       })
       .catch(() => {
-        toast.error("Failed to extract text from pdf")
+        toast.error("Failed to extract text from pdf");
         setIsLoadingPDF(false);
-        setPdfFile(null)
+        setPdfFile(null);
       });
   };
 
@@ -99,7 +112,10 @@ const UploadPdf = () => {
   ) => {
     setSuggestedQuestion("");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result_ = await model.generateContent(['You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user\'s actions or context explicitly (e.g., \'the user did this or that\'). Feel free to research the internet for more information.', ...dependencies]);
+    const result_ = await model.generateContent([
+      "You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user's actions or context explicitly (e.g., 'the user did this or that'). Feel free to research the internet for more information.",
+      ...dependencies,
+    ]);
     const response = await result_.response;
     const aiText = await response.text();
     aiText.substring(7, aiText.length - 3);
@@ -138,7 +154,10 @@ const UploadPdf = () => {
       setMessages([...messages, processedMessage]);
       setMessage("");
 
-      generateAIAnswer([JSON.stringify(messages), message, pdfText], processedMessage);
+      generateAIAnswer(
+        [JSON.stringify(messages), message, pdfText],
+        processedMessage
+      );
 
       const chatElement = chatArea.current as unknown as HTMLElement;
       chatElement.scrollTop = chatElement.scrollHeight;
@@ -169,8 +188,8 @@ const UploadPdf = () => {
           style={{ height: divHeight }}
         >
           <div className="flex flex-row items-center justify-start mt-7 ml-10 gap-x-3">
-          <Link to={'/home'} className="p-4 cursor-pointer">
-                <PiHouseSimpleThin className="text-black text-5xl"></PiHouseSimpleThin>
+            <Link to={"/home"} className="p-4 cursor-pointer">
+              <BsHouse className="text-black text-5xl"></BsHouse>
             </Link>
             <button className="bg-black text-white rounded-3xl cursor-pointer flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl relative">
               <PiUpload className="text-2xl"></PiUpload>
@@ -264,7 +283,8 @@ const UploadPdf = () => {
         >
           {messages.length == 0 && (
             <h3 className="text-4xl text-black text-center my-auto">
-              Hello Sheriff, Ask me any question about your pdf?
+              Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name},
+              Ask me any question about your pdf?
             </h3>
           )}
 

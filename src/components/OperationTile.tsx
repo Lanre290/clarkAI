@@ -8,7 +8,7 @@ interface OperationTile{
 
 const OperationTile = (params: OperationTile) => {
     return (
-        <div className="w-11/12 md:w-96 h-64 flex flex-col items-center justify-center rounded-3xl shadow-2xl m-5 operation-tile cursor-pointer hover:bg-gray-100">
+        <div className="w-11/12 md:w-96 h-64 flex flex-col items-center justify-center rounded-3xl shadow-2xl m-2 md:m-5 operation-tile cursor-pointer hover:bg-gray-100">
             <div className="w-full items-center justify-center">
                 {params.icon}
             </div>

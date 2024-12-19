@@ -6,7 +6,7 @@ import Lottie from "react-lottie";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { PiHouseSimpleThin } from "react-icons/pi";
+import { BsHouse } from "react-icons/bs";
 import ReactMarkdown from "react-markdown";
 import { CgClose } from "react-icons/cg";
 
@@ -106,7 +106,7 @@ const Scanner = () => {
       )}
 
       <Link to={"/home"} className="p-4 cursor-pointer flex w-16">
-        <PiHouseSimpleThin className="text-black text-7xl"></PiHouseSimpleThin>
+        <BsHouse className="text-black text-7xl"></BsHouse>
       </Link>
 
       <div className="flex flex-col w-full h-screen overflow-hidden justify-center items-center">

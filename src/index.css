@@ -1,9 +1,20 @@
+/* html {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  overflow-y: auto;
+  size: 1;
+} */
+
+
 pre {
   white-space: pre-wrap; /* Allow text to wrap */
   word-wrap: break-word; /* Break long words to prevent overflow */
 }
 
-body{
+body .chat-page{
   overflow-y: hidden;
 }
 
@@ -63,6 +74,11 @@ body{
   bottom: 10px;
   transform: translateY(0%);
   animation: typing 1.15s infinite;
+}
+
+.tilt-cont div{
+  width: 100%;
+  margin: auto;
 }
 
 @keyframes typing {

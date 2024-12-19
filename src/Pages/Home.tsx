@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import ChooseOperation from "../components/ChooseOperation";
 import Header from "../components/Header";
 import { genAI, reactTiltOptions } from "../script";
@@ -10,12 +10,41 @@ import ReactMarkdown from "react-markdown";
 import { Tilt } from "react-tilt";
 import Sidebar from "../components/Sidebar";
 import Loading from "../components/Loading";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import userAnimationData from './../assets/animations/userAnimation.json';
+import Lottie from "react-lottie";
+import { Fade } from "react-awesome-reveal";
+
+
+const loadingUserOption = {
+    loop: true,
+    autoplay: true,
+    animationData: userAnimationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
+  
 
 const Home = () => {
+    const {user} = useUser();
+    const navigate = useNavigate()
+
+
   const query = `Generate a random educational fact ranging from philosophy to physics, math, english, general studies, history and many more for a student, providing new knowledge or context. It must be accurate and must be a different one everytime. not more than only 50 words.`;
   const [randomFact, setRandomFact] = useState("");
   const [streakDays, setStreakDays] = useState(0);
   const [factCopied, setFactCopied] = useState(false);
+  const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAppLoaded, setIsAppLoaded] = useState(false);
+
+  const userContext = createContext(null);
+
+  if (!userContext) {
+  }
 
   const loadRandomFact = async () => {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -27,27 +56,71 @@ const Home = () => {
     setRandomFact(aiText);
   };
 
+  const loadUser = async () => {
+    const token = user?.token;
+    const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+        }
+      );
+
+
+      if (response.ok) {
+        let res = await response.json();
+        console.log(res);
+        const user_ = res.data;
+        setName(user_.name)
+        setIsLoading(false);
+      } else {
+        toast.error('Error fetching user Data. Please login again.');
+        navigate('/login');
+      }
+  }
+
   useEffect(() => {
-    loadRandomFact();
+    if(!isAppLoaded){
+        loadRandomFact();
+        loadUser();
+        setIsAppLoaded(true);
+    }
   }, []);
+
+
   return (
     <>
       <Header></Header>
       <Sidebar></Sidebar>
-      <div className="w-full h-full lg:w-5/6 mx-auto mt-10">
-        <div className="flex flex-row justify-evenly items-end">
-          <div className="flex flex-col w-96 rounded-br-2xl rounded-bl-2xl relative p-2">
+
+      {isLoading && (
+        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col z-50">
+          <Lottie options={loadingUserOption} height={400} width={400} />
+          <Fade direction="up" delay={1000} duration={1200}>
+            <h3 className="text-white text-4xl text-center">
+              Getting user data
+            </h3>
+          </Fade>
+        </div>
+      )}
+      <div className="w-full h-full lg:w-5/6 mx-auto mt-10 overflow-y-auto">
+        <h3 className="text-black text-3xl md:text-6xl ml-5 my-7">Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name} !</h3>
+        <div className="flex flex-col md:flex-row justify-center items-start md:justify-evenly md:items-end">
+          <div className="flex flex-col w-full mx-auto md:mx-0 md:w-96 rounded-br-2xl rounded-bl-2xl relative p-2">
             <img
               src={ideaImage}
               alt=""
-              className="w-14 h-14 object-cover absolute top-16 right-7"
+              className="w-14 h-14 object-cover absolute top-6 right-5 md:top-16 md:right-7"
             />
             <button
-              className="absolute top-16 left-7 text-white cursor-pointer"
+              className="absolute top-6 left-4 md:top-16 md:left-7 text-white cursor-pointer"
               title={factCopied == true ? "Copied" : "Copy to clipboard"}
               onClick={() => {
                 navigator.clipboard.writeText(randomFact);
-                toast.info("Fact cpoied to clipboard.");
+                toast.info("Fact copied to clipboard.");
                 setFactCopied(true);
                 setTimeout(() => {
                   setFactCopied(false);
@@ -64,18 +137,19 @@ const Home = () => {
               <div className="w-20 rounded-tr-3xl rounded-tl-3xl bg-black h-12"></div>
               <div className="w-20 rounded-tr-3xl rounded-tl-3xl bg-black h-12"></div>
             </div>
-            <h3 className="h-80 text-white bg-black w-full rounded-bl-3xl rounded-br-3xl flex justify-center items-center text-center p-3">
+            <h3 className="h-64 md:h-80 text-white bg-black w-full rounded-bl-3xl rounded-br-3xl flex justify-center items-center text-center p-3">
               <ReactMarkdown>{randomFact}</ReactMarkdown>
 
               {/* loading for when fact is yet to be generated */}
               {randomFact.trim().length == 0 && (
-                <Loading></Loading>
+                <Loading small={false}></Loading>
               )}
             </h3>
           </div>
 
+          <div className="flex tilt-cont w-96 mx-auto px-0">
           <Tilt option={reactTiltOptions}>
-            <div className="flex flex-col w-96 rounded-br-2xl rounded-bl-2xl relative">
+            <div className="flex flex-col w-full mx-3 md:mx-0 md:w-96 rounded-br-2xl rounded-bl-2xl relative">
               <img
                 src={streakImage}
                 alt=""
@@ -88,6 +162,7 @@ const Home = () => {
               </h3>
             </div>
           </Tilt>
+          </div>
         </div>
         <ChooseOperation></ChooseOperation>
       </div>
