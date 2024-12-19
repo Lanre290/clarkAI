@@ -3,13 +3,11 @@ import Header from "../components/Header";
 import { Fade } from "react-awesome-reveal";
 import { loadingAnimationOption } from "./UploadPdf";
 import Lottie from "react-lottie";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { toast } from "react-toastify";
+import { genAI } from "../script";
+
 
 const Scanner = () => {
-  const API_KEY = import.meta.env.VITE_GEMINI_KEY;
-
-  const genAI = new GoogleGenerativeAI(API_KEY);
 
   const [resultText, setResultText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -58,7 +56,18 @@ const Scanner = () => {
   const handleRecognize = async (imageData: { data: string; mimeType: string }) => {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const result = await model.generateContent([queryText, imageData.data]);
+      // const result = await model.generateContent([queryText, imageData.data]);
+      const structuredInput = {
+        query: queryText,
+        image: {
+          data: imageData.data,
+          mimeType: imageData.mimeType,
+        },
+      };
+
+      console.log(imageData)
+
+      const result = await model.generateContent(structuredInput as any);
 
       if (!result || !result.response) {
         throw new Error("Invalid response from the AI model.");

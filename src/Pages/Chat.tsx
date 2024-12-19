@@ -11,14 +11,12 @@ import { Link } from "react-router-dom";
 import { messageInterface } from "./UploadPdf";
 import { toast } from "react-toastify";
 import suggestQuestion from "../script";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import ReactMarkdown from "react-markdown";
+import { genAI } from "../script";
 
 
 
 const Chat = () => {
-  const API_KEY = import.meta.env.VITE_GEMINI_KEY;
-  const genAI = new GoogleGenerativeAI(API_KEY);
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<messageInterface[]>([]);

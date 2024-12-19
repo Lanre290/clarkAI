@@ -3,11 +3,11 @@ import Header from "../components/Header";
 import { useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { toast } from "react-toastify";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import pdfToText from "react-pdftotext";
 import ReactMarkdown from "react-markdown";
 import Lottie from "react-lottie";
 import loadingAnimationData from "./../assets/animations/loadingAnimation2.json";
+import { genAI } from "../script";
 import suggestQuestion from "../script";
 
 export interface messageInterface {
@@ -25,8 +25,6 @@ export const loadingAnimationOption = {
 };
 
 const UploadPdf = () => {
-  const API_KEY = import.meta.env.VITE_GEMINI_KEY;
-  const genAI = new GoogleGenerativeAI(API_KEY);
   const divHeight = screen.height - 190;
   const chatArea = useRef(null);
 
@@ -100,7 +98,7 @@ const UploadPdf = () => {
   ) => {
     setSuggestedQuestion("");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result_ = await model.generateContent(['You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user\'s actions or context explicitly (e.g., \'the user did this or that\'). ', ...dependencies]);
+    const result_ = await model.generateContent(['You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user\'s actions or context explicitly (e.g., \'the user did this or that\'). Feel free to research the internet for more information.', ...dependencies]);
     const response = await result_.response;
     const aiText = await response.text();
     aiText.substring(7, aiText.length - 3);
