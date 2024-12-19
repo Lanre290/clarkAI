@@ -7,6 +7,7 @@ import UploadPdf from './Pages/UploadPdf';
 import Profile from './Pages/Profile';
 import Login from './Pages/Login';
 import Signup from './Pages/Signup';
+import Scanner from './Pages/Scanner';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
         <Route path='/chat' element={<Chat />} />
         <Route path='/upload-pdf' element={<UploadPdf />} />
         <Route path='/profile' element={<Profile />} />
+        <Route path='/scanner' element={<Scanner />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
       </Routes>

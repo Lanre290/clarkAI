@@ -15,20 +15,20 @@ export interface messageInterface {
   message: string;
 }
 
+export const loadingAnimationOption = {
+  loop: true, // Set to false if you don't want it to loop
+  autoplay: true, // Set to true to autoplay the animation
+  animationData: loadingAnimationData, // The JSON data for the animation
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
+
 const UploadPdf = () => {
   const API_KEY = import.meta.env.VITE_GEMINI_KEY;
   const genAI = new GoogleGenerativeAI(API_KEY);
   const divHeight = screen.height - 190;
   const chatArea = useRef(null);
-
-  const loadingAnimationOption = {
-    loop: true, // Set to false if you don't want it to loop
-    autoplay: true, // Set to true to autoplay the animation
-    animationData: loadingAnimationData, // The JSON data for the animation
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
 
   const [filename, setFilename] = useState("");
   const [message, setMessage] = useState("");
@@ -100,7 +100,7 @@ const UploadPdf = () => {
   ) => {
     setSuggestedQuestion("");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result_ = await model.generateContent(dependencies);
+    const result_ = await model.generateContent(['You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user\'s actions or context explicitly (e.g., \'the user did this or that\'). ', ...dependencies]);
     const response = await result_.response;
     const aiText = await response.text();
     aiText.substring(7, aiText.length - 3);
@@ -139,7 +139,7 @@ const UploadPdf = () => {
       setMessages([...messages, processedMessage]);
       setMessage("");
 
-      generateAIAnswer([message, pdfText], processedMessage);
+      generateAIAnswer([JSON.stringify(messages), message, pdfText], processedMessage);
 
       const chatElement = chatArea.current as unknown as HTMLElement;
       chatElement.scrollTop = chatElement.scrollHeight;
@@ -324,7 +324,7 @@ const UploadPdf = () => {
                     };
                     setMessages([...messages, processedMessage]);
                     generateAIAnswer(
-                      [suggestedQuestion, pdfText],
+                      [JSON.stringify(messages), suggestedQuestion, pdfText],
                       processedMessage
                     );
                   }}

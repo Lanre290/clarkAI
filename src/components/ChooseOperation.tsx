@@ -1,5 +1,5 @@
 import OperationTile from "./OperationTile";
-import { PiRobotThin, PiUploadThin } from "react-icons/pi";
+import { PiRobotThin, PiScanThin, PiUploadThin } from "react-icons/pi";
 import { Link } from "react-router-dom";
 
 const ChooseOperation = () => {
@@ -18,6 +18,15 @@ const ChooseOperation = () => {
         <OperationTile
             icon={<PiRobotThin className="text-7xl text-black mx-auto" />}
             text={`Chat with AI`}
+        ></OperationTile>
+      </Link>
+
+      <Link
+        to={'/scanner'}
+        >
+        <OperationTile
+            icon={<PiScanThin className="text-7xl text-black mx-auto" />}
+            text={`AI Scanner \n Scan to solve`}
         ></OperationTile>
       </Link>
     </div>

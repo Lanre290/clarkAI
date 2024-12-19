@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { BiEdit } from "react-icons/bi";
 import {
@@ -10,12 +10,22 @@ import {
 import { Link } from "react-router-dom";
 import { messageInterface } from "./UploadPdf";
 import { toast } from "react-toastify";
+import suggestQuestion from "../script";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import ReactMarkdown from "react-markdown";
+
+
 
 const Chat = () => {
+  const API_KEY = import.meta.env.VITE_GEMINI_KEY;
+  const genAI = new GoogleGenerativeAI(API_KEY);
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<messageInterface[]>([]);
   const [suggestedQuestion, setSuggestedQuestion] = useState<string>("");
+  const [previousChats, setPreviousChats] = useState<any[]>([]);
+  const chatArea = useRef(null);
+
 
 
   const generateAIAnswer = async (
@@ -24,7 +34,7 @@ const Chat = () => {
   ) => {
     setSuggestedQuestion("");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result_ = await model.generateContent(dependencies);
+    const result_ = await model.generateContent(['You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user\'s actions or context explicitly (e.g., \'the user did this or that\'). ',...dependencies]);
     const response = await result_.response;
     const aiText = await response.text();
     aiText.substring(7, aiText.length - 3);
@@ -43,17 +53,13 @@ const Chat = () => {
     }
   };
 
-  const submitPDFQuestion = async (e: React.FormEvent) => {
+  const submitQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       setIsTyping(true);
       if (message.trim().length == 0) {
         throw new Error();
-      }
-
-      if (filename.length == 0) {
-        throw new Error("Upload a PDF file to interact with AI.");
       }
 
       let processedMessage = {
@@ -63,7 +69,9 @@ const Chat = () => {
       setMessages([...messages, processedMessage]);
       setMessage("");
 
-      generateAIAnswer([message, pdfText], processedMessage);
+      console.log(JSON.stringify(messages))
+
+      generateAIAnswer([JSON.stringify(processedMessage), JSON.stringify(messages)], processedMessage);
 
       const chatElement = chatArea.current as unknown as HTMLElement;
       chatElement.scrollTop = chatElement.scrollHeight;
@@ -72,6 +80,16 @@ const Chat = () => {
     }
   };
 
+
+  const createNewChat = () => {
+    let previousChatObject = {
+      title: messages[0].message,
+      messages: messages
+    }
+
+    setPreviousChats([...previousChats, previousChatObject]);
+    setMessages([]);
+  }
   
   return (
     <div className="w-full h-full flex flex-row">
@@ -79,9 +97,6 @@ const Chat = () => {
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
           <Link
             to={"/home"}
-            onProgress={() => {
-              console.log("dwwddw");
-            }}
           >
             <PiHouseLight
               className="text-black cursor-pointer text-4xl"
@@ -89,26 +104,44 @@ const Chat = () => {
             ></PiHouseLight>
           </Link>
 
-          <div className="flex flex-row">
+          <div className="flex flex-row" onClick={() => {
+            createNewChat()
+          }}>
             <BiEdit
               className="text-black cursor-pointer text-4xl"
               title="Create new chat"
             ></BiEdit>
           </div>
         </div>
+        <div className="flex flex-col w-full">
+          {
+            previousChats.map((chat) => {
+              return(
+                <div className="w-11/12 m-2 rounded-2xl bg-gray-200 items-center p-2 cursor-pointer hover:bg-gray-300" onClick={() => {
+                  setMessages(chat.messages)
+                }}>{chat.title}</div>
+              )
+            })
+          }
+        </div>
       </div>
 
-      <div className="flex flex-col w-full md:w-3/6 lg:w-2/5 mx-auto justify-center items-center relative py-14">
+      <div className="flex flex-col w-full h-screen md:w-3/6 mx-auto justify-center items-center relative py-14">
         <div className="flex flex-row items-center justify-end w-full absolute right-5 top-2">
           <button className="cursor-pointer" title="My profile">
             <PiUserCircleThin className="text-black text-5xl font-light"></PiUserCircleThin>
           </button>
         </div>
 
-        <h3 className="text-4xl text-black my-10 text-center">
-          Hello Sheriff, What can i help you with today?
-        </h3>
+        {
+          messages.length == 0 && (
+            <h3 className="text-4xl text-black my-10 text-center">
+              Hello Sheriff, What can i help you with today?
+            </h3>
+          )
+        }
 
+        <div className="w-full overflow-y-auto chat-inner-area" ref={chatArea}>
         {messages.length > 0 && (
           <div className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 pb-24">
             {messages.map((message: messageInterface) => {
@@ -124,7 +157,7 @@ const Chat = () => {
                         ? "rounded-tr-2xl rounded-tl-2xl rounded-bl-2xl bg-black text-white"
                         : "rounded-tr-2xl rounded-tl-2xl rounded-br-2xl bg-gray-200 text-black"
                     } p-4 w-fit`}
-                    style={{ maxWidth: "75%" }}
+                    style={{ maxWidth: "85%" }}
                   >
                     <ReactMarkdown>{message.message}</ReactMarkdown>
                   </div>
@@ -165,7 +198,7 @@ const Chat = () => {
                   };
                   setMessages([...messages, processedMessage]);
                   generateAIAnswer(
-                    [suggestedQuestion, pdfText],
+                    [suggestedQuestion, JSON.stringify(messages)],
                     processedMessage
                   );
                 }}
@@ -175,9 +208,10 @@ const Chat = () => {
             )}
           </div>
         )}
+        </div>
 
         <form
-          className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-2 left-2 right-2"
+          className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-2 left-2 right-2 mb-5 md:mb-16"
           style={{ borderRadius: "45px" }}
           onSubmit={submitQuestion}
         >
@@ -191,11 +225,9 @@ const Chat = () => {
             value={message}
           />
           <button
-            className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
-              pdfFile == null && "opacity-50 cursor-not-allowed"
-            }`}
+            className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center`}
             style={{ minWidth: "48px" }}
-            disabled={message.length > 0 && pdfFile !== null && false}
+            disabled={message.length > 0 && false}
           >
             <PiWaveform className="text-white text-2xl"></PiWaveform>
           </button>
@@ -204,10 +236,10 @@ const Chat = () => {
             <Fade direction="left" duration={260}>
               <button
                 className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
-                  pdfFile == null && "opacity-50 cursor-not-allowed"
+                  message.length == 0 && "opacity-50 cursor-not-allowed"
                 }`}
                 style={{ minWidth: "48px" }}
-                disabled={message.length > 0 && pdfFile !== null && false}
+                disabled={message.length > 0 && false}
                 type="submit"
               >
                 <PiArrowUpBold className="text-white text-2xl"></PiArrowUpBold>

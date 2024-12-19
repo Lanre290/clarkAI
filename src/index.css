@@ -74,3 +74,23 @@ pre {
     transform: translateY(0%);
   }
 }
+
+
+.chat-inner-area {
+  scrollbar-width: thin;
+  scrollbar-color: gray transparent;
+}
+
+/* WebKit-based browsers */
+.chat-inner-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-inner-area::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 4px;
+}
+
+.chat-inner-area::-webkit-scrollbar-track {
+  background: transparent;
+}
