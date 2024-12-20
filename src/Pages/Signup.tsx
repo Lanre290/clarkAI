@@ -6,6 +6,7 @@ import Loading from "../components/Loading";
 import { toast } from "react-toastify";
 import { Fade } from "react-awesome-reveal";
 import { useUser } from "../context/UserContext";
+import { countries as listOfCountries } from "./countries";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Signup = () => {
 
   const { setUser } = useUser();
 
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
 
@@ -25,26 +26,9 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [otpScreen, setOTPScreen] = useState<boolean>(false);
 
-  async function loadCountries() {
-    try {
-      const response = await fetch("https://restcountries.com/v2/all");
-      const countries = await response.json();
-
-      // Sort countries alphabetically by name.common
-      const sortedCountries = countries.sort((a: any, b: any) =>
-        a.name.common.localeCompare(b.name.common)
-      );
-
-      // Set the sorted countries in state
-      setCountries(sortedCountries);
-      console.log(sortedCountries);
-    } catch (error) {
-      console.error("Error fetching countries:", error);
-    }
-  }
-
+  
   useEffect(() => {
-    loadCountries();
+    setCountries(listOfCountries);
   }, []);
 
   const handleSubmit = async (e: any) => {
@@ -270,8 +254,8 @@ const Signup = () => {
           >
             <option value="">Choose your country</option>
             {countries.map((country: any, index) => (
-              <option key={index} value={country.name.common}>
-                {country.name.common}
+              <option key={index} value={country}>
+                {country}
               </option>
             ))}
           </select>
