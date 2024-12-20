@@ -10,7 +10,6 @@ import { countries as listOfCountries } from "./countries";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
-
 export interface GoogleSignInResponse {
   iss: string;
   azp: string;
@@ -52,7 +51,7 @@ const Signup = () => {
 
   const handleSubmit = async (e?: any) => {
     console.log(isGoogleSignup);
-    if(isGoogleSignup == false){
+    if (isGoogleSignup == false) {
       e.preventDefault();
     }
     setLoading(true);
@@ -62,7 +61,7 @@ const Signup = () => {
     }, 1500);
 
     try {
-      if(!isGoogleSignup){
+      if (!isGoogleSignup) {
         if (password != confirmPassword) {
           throw new Error("passwords do not match.");
         }
@@ -73,7 +72,7 @@ const Signup = () => {
         email: email,
         password: password,
         country: country,
-        is_google: isGoogleSignup
+        is_google: isGoogleSignup,
       };
 
       setRequestLoading(true);
@@ -103,7 +102,6 @@ const Signup = () => {
       setLoading(false);
     }
   };
-
 
   const verifyOTP = async (e: any) => {
     e.preventDefault();
@@ -159,16 +157,16 @@ const Signup = () => {
   const handleGoogleSignup = (response: any) => {
     const { credential } = response; // JWT token
     const decoded: GoogleSignInResponse = jwtDecode(credential);
-    const token = import.meta.env.VITE_COUNTRY_TOKEN
+    const token = import.meta.env.VITE_COUNTRY_TOKEN;
 
     fetch(`https://ipinfo.io?token=${token}`)
       .then((response) => response.json())
       .then((data) => {
         const country_ = data.country;
         setCountry(country_);
-        setName(decoded.name)
-        setEmail(decoded.email)
-        setPassword('');
+        setName(decoded.name);
+        setEmail(decoded.email);
+        setPassword("");
 
         setIsGoogleSignup(true);
       });
@@ -178,12 +176,11 @@ const Signup = () => {
     toast.error("Login Failed");
   };
 
-
   useEffect(() => {
-    if(isGoogleSignup){
+    if (isGoogleSignup) {
       handleSubmit();
     }
-  }, [email, password, country, name , isGoogleSignup]);
+  }, [email, password, country, name, isGoogleSignup]);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-white overflow-x-hidden">
