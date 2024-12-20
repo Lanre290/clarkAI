@@ -49,7 +49,7 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="w-full h-full flex flex-row justify-between shadow-xl">
+    <div className="w-full h-full flex flex-row justify-between shadow-xl" style={{zIndex: 100}}>
       <div className="flex flex-row items-center justify-center">
         <div className="text-black font-light text-2xl items-center justify-center m-4 flex flex-row">
           <PiRobotThin className="text-5xl"></PiRobotThin>

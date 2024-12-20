@@ -1,5 +1,7 @@
 import {
   PiArrowUpBold,
+  PiDownloadThin,
+  PiRobotThin,
   PiUpload,
   PiWaveform,
 } from "react-icons/pi";
@@ -16,6 +18,8 @@ import suggestQuestion from "../script";
 import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { BsHouse } from "react-icons/bs";
+import { CgClose } from "react-icons/cg";
+import { jsPDF } from "jspdf";
 
 export interface messageInterface {
   fromUser: boolean;
@@ -34,6 +38,7 @@ export const loadingAnimationOption = {
 const UploadPdf = () => {
   const divHeight = screen.height - 190;
   const chatArea = useRef(null);
+  const pdfHTMLElement = useRef(null);
 
   const [filename, setFilename] = useState("");
   const [message, setMessage] = useState("");
@@ -52,18 +57,20 @@ const UploadPdf = () => {
   );
   const [suggestedQuestion, setSuggestedQuestion] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [chatScreen, setChatScreen] = useState<boolean>(
+    screen.width > 768 ? true : false
+  );
 
   const { user, setUser } = useUser();
 
   useEffect(() => {
-      if(!user){
-        const user = JSON.parse(localStorage.getItem('user') as string)
-        setUser(user);
-        setName(user?.user.name as string);
-      }
-      else{
-        setName(user?.user.name as string);
-      }
+    if (!user) {
+      const user = JSON.parse(localStorage.getItem("user") as string);
+      setUser(user);
+      setName(user?.user.name as string);
+    } else {
+      setName(user?.user.name as string);
+    }
   }, []);
 
   const handleAI = async (file: any) => {
@@ -141,6 +148,20 @@ const UploadPdf = () => {
     }
   };
 
+  const generatePDF = async () => {
+    const doc = new jsPDF();
+
+    // Select the HTML element you want to render
+    const content = pdfHTMLElement.current;
+
+    doc.html(content as unknown as string | HTMLElement, {
+      callback: () => {
+        doc.save(`${filename}_${pdfMode}.pdf`);
+      },
+      margin: [10, 10, 10, 10],
+    });
+  };
+
   const submitPDFQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -179,7 +200,7 @@ const UploadPdf = () => {
 
       {/* loading animation div */}
       {isLoadingPDF && (
-        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col z-50">
+        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col" style={{zIndex: 9999999}}>
           <Lottie options={loadingAnimationOption} height={400} width={400} />
           <Fade direction="up" delay={1000} duration={1200}>
             <h3 className="text-white text-4xl text-center">
@@ -191,31 +212,43 @@ const UploadPdf = () => {
 
       <div className="w-full h-full flex md:flex-row">
         <div
-          className="md:w-2/3 lg:w-4/6 h-full overflow-y-auto"
-          style={{ height: screen.width > 768 ? divHeight : '100vh' }}
+          className="md:w-2/3 lg:w-4/6 w-full h-full overflow-y-auto"
+          style={{ height: screen.width > 768 ? divHeight : "100vh" }}
         >
-          <div className="flex flex-row items-center justify-start mt-7 ml-10 gap-x-3">
-            <Link to={"/home"} className="p-4 cursor-pointer">
-              <BsHouse className="text-black text-5xl"></BsHouse>
-            </Link>
-            <button className="bg-black text-white rounded-3xl cursor-pointer flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl relative">
-              <PiUpload className="text-2xl"></PiUpload>
-              upload PDF
-              <input
-                type="file"
-                name=""
-                className="absolute top-0 right-0 left-0 bottom-0 rounded-3xl z-50 cursor-pointer opacity-0"
-                onChange={changeFile}
-                accept=".pdf"
-              />
-            </button>
+          <div className="flex flex-col md:flex-row items-center justify-start w-full mt-7 md:ml-10 gap-x-3 gap-y-2">
+            <div className="flex flex-row items-center justify-start w-full md:w-min">
+              <Link to={"/home"} className="p-4 cursor-pointer">
+                <BsHouse className="text-black text-5xl"></BsHouse>
+              </Link>
+              <button className="bg-black text-white rounded-3xl cursor-pointer w-64 h-12 md:h-auto flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl relative">
+                <PiUpload className="text-2xl"></PiUpload>
+                upload PDF
+                <input
+                  type="file"
+                  name=""
+                  className="absolute top-0 right-0 left-0 bottom-0 rounded-3xl z-50 cursor-pointer opacity-0"
+                  onChange={changeFile}
+                  accept=".pdf"
+                />
+              </button>
+              {screen.width < 768 && (
+                <button
+                  className="p-4 cursor-pointer"
+                  onClick={() => {
+                    setChatScreen(true);
+                  }}
+                >
+                  <PiRobotThin className="text-black text-5xl"></PiRobotThin>
+                </button>
+              )}
+            </div>
 
             <h3 className="text-black text-3xl h-full flex items-center justify-start w-1/2 truncate">
               {filename}
             </h3>
           </div>
 
-          <div className="flex flex-row ml-10 mt-2 gap-x-2">
+          <div className="flex flex-col md:flex-row justify-start md:ml-10 mt-2 gap-x-2">
             <button
               className={`${
                 pdfMode == "summary" ? "bg-black text-white" : "text-black"
@@ -223,7 +256,7 @@ const UploadPdf = () => {
                 pdfFile == null
                   ? "cursor-not-allowed opacity-50"
                   : "cursor-pointer"
-              } flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl`}
+              } flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl w-11/12 md:w-auto md:mx-0 mx-auto my-1`}
               title={pdfFile == null ? "Upload a pdf file" : "Summarize my PDF"}
               disabled={pdfFile == null}
               onClick={() => {
@@ -242,7 +275,7 @@ const UploadPdf = () => {
                 pdfFile == null
                   ? "cursor-not-allowed opacity-50"
                   : "cursor-pointer"
-              } flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl`}
+              } flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl w-11/12 md:w-auto md:mx-0 mx-auto my-1`}
               title={
                 pdfFile == null ? "Upload a pdf file" : "Explain PDF Simply"
               }
@@ -263,7 +296,7 @@ const UploadPdf = () => {
                 pdfFile == null
                   ? "cursor-not-allowed opacity-50"
                   : "cursor-pointer"
-              } flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl`}
+              } flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl w-11/12 md:w-auto md:mx-0 mx-auto my-1`}
               title={pdfFile == null ? "Upload a pdf file" : "Elaborate PDF"}
               disabled={pdfFile == null}
               onClick={() => {
@@ -277,134 +310,173 @@ const UploadPdf = () => {
             </button>
           </div>
 
-          <div className="p-5">
+          <div className="p-5" ref={pdfHTMLElement}>
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         </div>
 
         {/* chat area */}
-        <div
-          className="md:w-1/3 lg:w-2/6 h-full border-l border-gray-400 flex flex-col justify-end relative"
-          ref={chatArea}
-          style={{ height: divHeight, transitionDuration: "0.5s" }}
-        >
-          {messages.length == 0 && (
-            <h3 className="text-4xl text-black text-center my-auto">
-              Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name},
-              Ask me any question about your pdf?
-            </h3>
-          )}
-
-          {/* main chat area div */}
-
-          {messages.length > 0 && (
-            <div className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 pb-24">
-              {messages.map((message: messageInterface) => {
-                return (
-                  <div
-                    className={`flex items-center ${
-                      message.fromUser == true ? "justify-end" : "justify-start"
-                    } h-min`}
-                  >
-                    <div
-                      className={`${
-                        message.fromUser == true
-                          ? "rounded-tr-2xl rounded-tl-2xl rounded-bl-2xl bg-black text-white"
-                          : "rounded-tr-2xl rounded-tl-2xl rounded-br-2xl bg-gray-200 text-black"
-                      } p-4 w-fit`}
-                      style={{ maxWidth: "75%" }}
-                    >
-                      <ReactMarkdown>{message.message}</ReactMarkdown>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {isTyping && (
-                <div className="w-full">
-                  <div
-                    className="flex flex-row p-3 pt-0 bg-gray-100 message-from items-center justify-center relative h-20 mb-10"
-                    style={{ width: "137px" }}
-                  >
-                    <div
-                      className="typing-dot w-7 h-7 rounded-full bg-gray-300 absolute"
-                      style={{ left: "16px", animationDelay: "0s" }}
-                    ></div>
-                    <div
-                      className="typing-dot w-7 h-7 rounded-full bg-gray-300 absolute"
-                      style={{ left: "52px", animationDelay: "0.25s" }}
-                    ></div>
-                    <div
-                      className="typing-dot w-7 h-7 rounded-full bg-gray-300 absolute"
-                      style={{ left: "92px", animationDelay: "0.5s" }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-
-              {suggestedQuestion.trim().length > 0 && (
-                <div
-                  className={`text-black border border-black rounded-3xl flex flex-row bg-transparent gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl hover:bg-gray-200 cursor-pointer`}
-                  onClick={async () => {
-                    setIsTyping(true);
-                    let processedMessage = {
-                      fromUser: true,
-                      message: suggestedQuestion,
-                    };
-                    setMessages([...messages, processedMessage]);
-                    generateAIAnswer(
-                      [JSON.stringify(messages), suggestedQuestion, pdfText],
-                      processedMessage
-                    );
-                  }}
-                >
-                  {suggestedQuestion}
-                </div>
-              )}
-            </div>
-          )}
-
-          <form
-            className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-2 left-2 right-2"
-            style={{ borderRadius: "45px" }}
-            onSubmit={submitPDFQuestion}
+        {chatScreen && (
+          <div
+            className="md:w-1/3 lg:w-2/6 h-full fixed top-0 bottom-0 left-0 right-0 bg-white pt-20 md:pt-0 md:mt-7 md:static"
+            style={{
+              height: screen.width > 768 ? divHeight : "100vh",
+              zIndex: screen.width < 768 ? 9999999999999 : 5,
+              msTransitionDuration: "0.5s",
+            }}
           >
-            <input
-              type="text"
-              className="bg-transparent flex flex-grow w-full focus:outline-none px-5 text-xl"
-              placeholder="Message ClarkAI"
-              onInput={(e: any) => {
-                setMessage(e.target.value);
-              }}
-              value={message}
-            />
-            <button
-              className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
-                pdfFile == null && "opacity-50 cursor-not-allowed"
-              }`}
-              style={{ minWidth: "48px" }}
-              disabled={message.length > 0 && pdfFile !== null && false}
+            {screen.width < 768 && (
+              <button className="">
+                <button className="w-14 h-14 text-black z-50 absolute top-0 right-0">
+                  <CgClose
+                    className="text-black text-5xl cursor-pointer"
+                    onClick={() => {
+                      setChatScreen(false);
+                    }}
+                  />
+                </button>
+              </button>
+            )}
+            <div
+              className="w-full h-full border-l border-gray-400 flex flex-col justify-end relative"
+              ref={chatArea}
             >
-              <PiWaveform className="text-white text-2xl"></PiWaveform>
-            </button>
+              {messages.length == 0 && (
+                <h3 className="text-4xl text-black text-center my-auto">
+                  Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name}
+                  , Ask me any question about your pdf?
+                </h3>
+              )}
 
-            {message.length > 0 && (
-              <Fade direction="left" duration={260}>
+              {/* main chat area div */}
+
+              {messages.length > 0 && (
+                <div className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 pb-32 md:pb-24">
+                  {messages.map((message: messageInterface) => {
+                    return (
+                      <div
+                        className={`flex items-center ${
+                          message.fromUser == true
+                            ? "justify-end"
+                            : "justify-start"
+                        } h-min`}
+                      >
+                        <div
+                          className={`${
+                            message.fromUser == true
+                              ? "rounded-tr-2xl rounded-tl-2xl rounded-bl-2xl bg-black text-white"
+                              : "rounded-tr-2xl rounded-tl-2xl rounded-br-2xl bg-gray-200 text-black"
+                          } p-4 w-fit`}
+                          style={{ maxWidth: "75%" }}
+                        >
+                          <ReactMarkdown>{message.message}</ReactMarkdown>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {isTyping && (
+                    <div className="w-full">
+                      <div
+                        className="flex flex-row p-3 pt-0 bg-gray-100 message-from items-center justify-center relative h-20 mb-10"
+                        style={{ width: "137px" }}
+                      >
+                        <div
+                          className="typing-dot w-7 h-7 rounded-full bg-gray-300 absolute"
+                          style={{ left: "16px", animationDelay: "0s" }}
+                        ></div>
+                        <div
+                          className="typing-dot w-7 h-7 rounded-full bg-gray-300 absolute"
+                          style={{ left: "52px", animationDelay: "0.25s" }}
+                        ></div>
+                        <div
+                          className="typing-dot w-7 h-7 rounded-full bg-gray-300 absolute"
+                          style={{ left: "92px", animationDelay: "0.5s" }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {suggestedQuestion.trim().length > 0 && (
+                    <div
+                      className={`text-black border border-black rounded-3xl flex flex-row bg-transparent gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl hover:bg-gray-200 cursor-pointer`}
+                      onClick={async () => {
+                        setIsTyping(true);
+                        let processedMessage = {
+                          fromUser: true,
+                          message: suggestedQuestion,
+                        };
+                        setMessages([...messages, processedMessage]);
+                        generateAIAnswer(
+                          [
+                            JSON.stringify(messages),
+                            suggestedQuestion,
+                            pdfText,
+                          ],
+                          processedMessage
+                        );
+                      }}
+                    >
+                      {suggestedQuestion}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <form
+                className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-10 md:bottom-2 left-2 right-2"
+                style={{ borderRadius: "45px" }}
+                onSubmit={submitPDFQuestion}
+              >
+                <input
+                  type="text"
+                  className="bg-transparent flex flex-grow w-full focus:outline-none px-5 text-xl"
+                  placeholder="Message ClarkAI"
+                  onInput={(e: any) => {
+                    setMessage(e.target.value);
+                  }}
+                  value={message}
+                />
                 <button
                   className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
                     pdfFile == null && "opacity-50 cursor-not-allowed"
                   }`}
                   style={{ minWidth: "48px" }}
                   disabled={message.length > 0 && pdfFile !== null && false}
-                  type="submit"
                 >
-                  <PiArrowUpBold className="text-white text-2xl"></PiArrowUpBold>
+                  <PiWaveform className="text-white text-2xl"></PiWaveform>
                 </button>
-              </Fade>
-            )}
-          </form>
-        </div>
+
+                {message.length > 0 && (
+                  <Fade direction="left" duration={260}>
+                    <button
+                      className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
+                        pdfFile == null && "opacity-50 cursor-not-allowed"
+                      }`}
+                      style={{ minWidth: "48px" }}
+                      disabled={message.length > 0 && pdfFile !== null && false}
+                      type="submit"
+                    >
+                      <PiArrowUpBold className="text-white text-2xl"></PiArrowUpBold>
+                    </button>
+                  </Fade>
+                )}
+              </form>
+            </div>
+          </div>
+        )}
       </div>
+
+      {pdfFile !== null && (
+        <button
+          className="fixed bottom-10 right-3 md:left-3 md:right-auto cursor-pointer bg-black p-5 rounded-full"
+          title="download pdf"
+          onClick={generatePDF}
+          style={{ zIndex: 9999 }}
+        >
+          <PiDownloadThin className="text-4xl text-white"></PiDownloadThin>
+        </button>
+      )}
     </>
   );
 };
