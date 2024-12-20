@@ -148,7 +148,7 @@ const Signup = () => {
           className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-40 flex justify-center items-center px-3 "
           style={{ backdropFilter: "blur(2px)" }}
         >
-          <form className="fixed flex flex-col md:rounded-3xl shadow-2xl md:py-9 px-16 gap-y-5 bg-white w-full h-full md:h-auto md:w-max items-center justify-center" onSubmit={verifyOTP}>
+          <form className="fixed flex flex-col md:rounded-3xl shadow-2xl md:py-9 px-16 gap-y-5 bg-white w-full h-full md:h-auto md:w-max items-center justify-center bg-white" onSubmit={verifyOTP}>
             <div className="w-full flex flex-col">
               <h3 className="text-black text-center text-wrap text-3xl">
                 Enter your OTP
