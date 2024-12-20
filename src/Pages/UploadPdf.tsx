@@ -53,10 +53,17 @@ const UploadPdf = () => {
   const [suggestedQuestion, setSuggestedQuestion] = useState<string>("");
   const [name, setName] = useState<string>("");
 
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   useEffect(() => {
-    setName(user?.user.name as string);
+      if(!user){
+        const user = JSON.parse(localStorage.getItem('user') as string)
+        setUser(user);
+        setName(user?.user.name as string);
+      }
+      else{
+        setName(user?.user.name as string);
+      }
   }, []);
 
   const handleAI = async (file: any) => {
@@ -185,7 +192,7 @@ const UploadPdf = () => {
       <div className="w-full h-full flex md:flex-row">
         <div
           className="md:w-2/3 lg:w-4/6 h-full overflow-y-auto"
-          style={{ height: divHeight }}
+          style={{ height: screen.width > 768 ? divHeight : '100vh' }}
         >
           <div className="flex flex-row items-center justify-start mt-7 ml-10 gap-x-3">
             <Link to={"/home"} className="p-4 cursor-pointer">

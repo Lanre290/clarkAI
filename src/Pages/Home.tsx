@@ -77,8 +77,16 @@ const Home = () => {
         setStreakDays(user_.streak_count);
         setIsLoading(false);
       } else {
-        toast.error('Error fetching user Data. Please login again.');
-        navigate('/login');
+        if(!localStorage.getItem('user')){
+          toast.error('Error fetching user Data. Please login again.');
+          ('/login');
+        }
+        else{
+          let user__ = JSON.parse(localStorage.getItem('user') as string);
+          setName(user__.user.name);
+          setStreakDays(user__.user.streak_count);
+          setIsLoading(false);
+        }
       }
   }
 

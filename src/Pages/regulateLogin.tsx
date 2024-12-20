@@ -23,14 +23,14 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({ childre
                 toast.error("Your session has expired. Please log in again.");
             }
         } else {
-            const user_: any = user || JSON.parse(localStorage.getItem("user") || "{}");
+            const user_: any = JSON.parse(localStorage.getItem("user") as string);
             setUser(user_);
             
             if(location.pathname === "/login" || location.pathname === "/signup"){
                 navigate('/home');
             }
         }
-    }, [user, setUser, navigate]);
+    }, []);
 
     return <>{children}</>; // Render children if provided
 };

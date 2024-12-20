@@ -40,7 +40,7 @@ const Profile = () => {
 
                     <button className="bg-black text-white rounded-3xl cursor-pointer flex flex-row gap-x-4 p-5 px-8 items-center justify-center drop-shadow-2xl">
                         <BiEdit className="text-2xl"></BiEdit>
-                        <h3 className="hidden md:flex">Edit profile</h3>
+                        Edit profile
                     </button>
                 </div>
             </div>

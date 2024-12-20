@@ -25,13 +25,19 @@ const Chat = () => {
   const [name, setName] = useState<string>('');
   const chatArea = useRef(null);
 
-  const {user} = useUser();
+  const {user, setUser} = useUser();
   
 
   useEffect(() => {
-    setName(user?.user.name as string);
-  
-  }, [])
+    if(!user){
+      const user = JSON.parse(localStorage.getItem('user') as string)
+      setUser(user);
+      setName(user?.user.name as string);
+    }
+    else{
+      setName(user?.user.name as string);
+    }
+}, []);
   
 
 
