@@ -1,6 +1,6 @@
 import { PiRobotThin } from "react-icons/pi";
 import googleImage from "./../assets/images/google.png";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
@@ -51,7 +51,6 @@ const Login = () => {
         const token = res.token;
         setUser(res);
         localStorage.setItem('user', JSON.stringify(res))
-        console.log(res)
         localStorage.setItem('token', token);
         toast.info('Login successful');
 

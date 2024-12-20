@@ -40,7 +40,6 @@ const Signup = () => {
     }, 1500);
 
     try {
-      console.log(password != confirmPassword);
       if (password != confirmPassword) {
         throw new Error("passwords do not match.");
       }
@@ -64,7 +63,6 @@ const Signup = () => {
         }
       );
 
-      console.log(response);
 
       if (response.ok) {
         setLoading(false);
@@ -72,7 +70,6 @@ const Signup = () => {
       } else {
         setLoading(false);
         let res = await response.json();
-        console.log(res.body);
         toast.error(res.error);
       }
 
@@ -109,13 +106,14 @@ const Signup = () => {
         }
       );
 
-      console.log(response);
-
       if (response.ok) {
+        setLoading(false);
         const res = await response.json();
         setUser(res);
         localStorage.setItem('user', JSON.stringify(res));
         toast.info('Account created successfully');
+        localStorage.setItem('token', res.token);
+
 
         // Add a little delay before redirecting to ensure user sees account created notification
         setTimeout(() => {

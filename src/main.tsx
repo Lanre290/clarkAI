@@ -5,7 +5,6 @@ import App from './App.tsx'
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { UserProvider } from './context/UserContext.tsx';
-import UseCheckUserSession from './Pages/regulateLogin.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

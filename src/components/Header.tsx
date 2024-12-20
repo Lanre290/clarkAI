@@ -44,8 +44,8 @@ const Header = () => {
       }
     };
 
-    setIsPremium(user?.user.is_premium as boolean);
-    console.log(user?.user);
+    
+    setIsPremium(user?.user.is_premium as boolean || (localStorage.getItem('user') as any).user.is_premium as boolean);
   }, []);
 
   return (

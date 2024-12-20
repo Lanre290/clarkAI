@@ -72,7 +72,6 @@ const Home = () => {
 
       if (response.ok) {
         let res = await response.json();
-        console.log(res);
         const user_ = res.data;
         setName(user_.name);
         setStreakDays(user_.streak_count);
@@ -85,7 +84,6 @@ const Home = () => {
 
   useEffect(() => {
     if(!isAppLoaded){
-      console.log(isAppLoaded)
         loadRandomFact();
         loadUser();
         setIsAppLoaded(true);
