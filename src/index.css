@@ -81,6 +81,17 @@ body .chat-page{
   margin: auto;
 }
 
+.gold{
+  color: gold;
+}
+
+.border-gold{
+  border-color: gold;
+}
+
+.skiptranslate{
+  display: none;
+}
 @keyframes typing {
   0% {
     transform: translateY(0%);

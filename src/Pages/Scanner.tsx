@@ -22,7 +22,7 @@ const Scanner = () => {
   } | null>(null);
   const [isSolved, setIsSolved] = useState<boolean>(false);
 
-  const queryText = `You are a ai study buddy. This is an image, parse it to it's digital format and help your student with this? keep a slow student in mind while explaining. Ignore the fact that it is an OCR file, don't mention that part.`;
+  const queryText = `You are a ai study buddy. This is an image, parse it to it's digital format and help your student with this? keep a slow student in mind while explaining. explain everything completely in one response Ignore the fact that it is an OCR file, don't mention that part.`;
 
   // Convert file to base64 and MIME type
   const generativeFile = async (file: File) => {

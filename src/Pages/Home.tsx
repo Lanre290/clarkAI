@@ -33,7 +33,7 @@ const Home = () => {
     const navigate = useNavigate()
 
 
-  const query = `Generate a random educational fact ranging from philosophy to physics, math, english, general studies, history and many more for a student, providing new knowledge or context. It must be accurate and must be a different one everytime. not more than only 50 words.`;
+  const query = `Generate a unique, non-repeating educational fact from a random subject like space, biology, physics, chemistry, math, art, philosophy, literature, history, general studies, or others. Each fact should introduce fresh knowledge or context, be accurate, and not exceed 50 words. Rotate subjects frequently to ensure diversity.enerate a random educational fact ranging from philosophy to physics, math, english, general studies, history and many more for a student, providing new knowledge or context. It must be accurate and must be a different one everytime. not more than only 50 words.`;
   const [randomFact, setRandomFact] = useState("");
   const [streakDays, setStreakDays] = useState(0);
   const [factCopied, setFactCopied] = useState(false);
@@ -74,7 +74,8 @@ const Home = () => {
         let res = await response.json();
         console.log(res);
         const user_ = res.data;
-        setName(user_.name)
+        setName(user_.name);
+        setStreakDays(user_.streak_count);
         setIsLoading(false);
       } else {
         toast.error('Error fetching user Data. Please login again.');

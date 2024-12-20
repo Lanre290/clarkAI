@@ -9,6 +9,8 @@ interface User {
         email: string;
         country: string;
         role: string;
+        is_premium: boolean;
+        streak_count: number;
     }
 }
 
