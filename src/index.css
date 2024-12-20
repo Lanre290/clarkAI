@@ -93,6 +93,15 @@ body .chat-page{
   display: none;
 }
 
+.google-signing-cont div[role="button"]{
+  padding: 20px 40px;
+  border: 1px solid rgb(107 114 128);
+  border-radius: 24px;
+  background: transparent;
+  cursor: pointer;
+  margin-top: 40px;
+  row-gap: 12px;
+}
 
 @keyframes typing {
   0% {

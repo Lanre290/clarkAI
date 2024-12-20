@@ -1,10 +1,14 @@
 import { PiRobotThin } from "react-icons/pi";
 import googleImage from "./../assets/images/google.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
 import { useUser } from "../context/UserContext";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { googleClientId, GoogleSignInResponse } from "./Signup";
+import { jwtDecode } from "jwt-decode";
+import { Fade } from "react-awesome-reveal";
 
 const Login = () => {
 
@@ -15,11 +19,14 @@ const Login = () => {
   const [requestLoading, setRequestLoading] = useState(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [isGoogleSignup, setIsGoogleSignup] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: any) => {
+    if(isGoogleSignup == false){
+      e.preventDefault();
+    }
     setLoading(true);
 
     setTimeout(() => {
@@ -30,6 +37,7 @@ const Login = () => {
       const body = {
         email: email,
         password: password,
+        is_google: isGoogleSignup
       };
 
       setRequestLoading(true);
@@ -71,8 +79,38 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSignup = (response: any) => {
+    const { credential } = response; // JWT token
+    const decoded: GoogleSignInResponse = jwtDecode(credential);
+
+    
+    setIsGoogleSignup(true);
+    setEmail(decoded.email)
+    setPassword('');
+  };
+
+  useEffect(() => {
+    if(isGoogleSignup){
+      handleSubmit();
+    }
+  }, [email, isGoogleSignup]);
+  
+
+  const handleGoogleSignupFailure = () => {
+    toast.error("Login Failed");
+  };
+
+
   return (
     <div className="flex flex-col w-screen h-screen bg-white">
+      {requestLoading && (
+        <Fade direction="right" duration={300} style={{ zIndex: 9999 }}>
+          <div className="fixed top-16 right-10 rounded-2xl bg-white flex flex-row gap-x-4 p-5 shadow-2xl pr-16">
+            <Loading small={true}></Loading>
+            <h3 className="text-black">Processing...</h3>
+          </div>
+        </Fade>
+      )}
       <form
         action=""
         className="flex flex-col w-full md:w-2/4 lg:w-1/3 bg-white rounded-3xl bg-opacity-90 justify-center items-center p-6 m-auto"
@@ -83,9 +121,13 @@ const Login = () => {
           <h3 className="font-light text-black text-5xl logo-text">Clark</h3>
         </div>
 
-        <div className="p-5 border border-gray-500 rounded-3xl bg-transparent flex flex-row cursor-pointer hover:bg-gray-200 text-2xl gap-x-3 mt-10">
-          <img src={googleImage} alt="" className="w-10 h-10 object-contain" />
-          Continue with google
+        <div className="google-signing-cont">
+          <GoogleOAuthProvider clientId={googleClientId}>
+            <GoogleLogin
+              onSuccess={handleGoogleSignup}
+              onError={handleGoogleSignupFailure}
+            ></GoogleLogin>
+          </GoogleOAuthProvider>
         </div>
 
         <h3 className="text-black text-3xl text-center my-5">OR</h3>
