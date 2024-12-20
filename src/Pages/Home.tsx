@@ -85,6 +85,7 @@ const Home = () => {
 
   useEffect(() => {
     if(!isAppLoaded){
+      console.log(isAppLoaded)
         loadRandomFact();
         loadUser();
         setIsAppLoaded(true);

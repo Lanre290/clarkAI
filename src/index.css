@@ -92,6 +92,8 @@ body .chat-page{
 .skiptranslate{
   display: none;
 }
+
+
 @keyframes typing {
   0% {
     transform: translateY(0%);
