@@ -23,11 +23,11 @@ const Signup = () => {
   const [country, setCountry] = useState<string>("");
   const [otp, setOTP] = useState('');
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [otpScreen, setOTPScreen] = useState<boolean>(false);
+  const [otpScreen, setOTPScreen] = useState<boolean>(true);
 
   async function loadCountries() {
     try {
-      const response = await fetch("https://restcountries.com/v3.1/all");
+      const response = await fetch("https://restcountries.com/v2/all");
       const countries = await response.json();
 
       // Sort countries alphabetically by name.common
@@ -163,10 +163,10 @@ const Signup = () => {
 
       {otpScreen && (
         <div
-          className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-40 flex justify-center items-center"
+          className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-40 flex justify-center items-center px-3 "
           style={{ backdropFilter: "blur(2px)" }}
         >
-          <form className="fixed flex flex-col rounded-3xl shadow-2xl py-9 px-16 gap-y-5 bg-white" onSubmit={verifyOTP}>
+          <form className="fixed flex flex-col md:rounded-3xl shadow-2xl md:py-9 px-16 gap-y-5 bg-white w-full h-full md:h-auto md:w-max" onSubmit={verifyOTP}>
             <div className="w-full flex flex-col">
               <h3 className="text-black text-center text-wrap text-3xl">
                 Enter your OTP
@@ -183,7 +183,7 @@ const Signup = () => {
 
             <input
               type="password"
-              className="text-3xl text-black placeholder-black py-9 px-4 font-light border border-black rounded-xl text-center"
+              className="text-3xl text-black placeholder-black py-3 md:py-9 px-4 font-light border border-black rounded-xl text-center"
               placeholder="Enter OTP..."
               id=""
               maxLength={4}
