@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { toast } from "react-toastify";
 
@@ -19,7 +19,9 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({ childre
             else{
                 navigate("/login");
             }
-            toast.error("Your session has expired. Please log in again.");
+            if(localStorage.getItem('user')){
+                toast.error("Your session has expired. Please log in again.");
+            }
         } else {
             const user_: any = user || JSON.parse(localStorage.getItem("user") || "{}");
             setUser(user_);
