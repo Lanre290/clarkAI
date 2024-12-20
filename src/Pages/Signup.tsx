@@ -254,7 +254,7 @@ const Signup = () => {
         className="flex flex-col w-full md:w-2/4 lg:w-1/3 bg-white rounded-3xl bg-opacity-90 justify-center items-center p-6 m-auto"
         onSubmit={handleSubmit}
       >
-        <div className="flex flex-row">
+        <div className="flex flex-row mb-5">
           <PiRobotThin className="text-5xl"></PiRobotThin>
           <h3 className="font-light text-black text-5xl logo-text">Clark</h3>
         </div>
