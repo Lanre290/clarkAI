@@ -23,7 +23,7 @@ const Signup = () => {
   const [country, setCountry] = useState<string>("");
   const [otp, setOTP] = useState('');
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [otpScreen, setOTPScreen] = useState<boolean>(true);
+  const [otpScreen, setOTPScreen] = useState<boolean>(false);
 
   async function loadCountries() {
     try {
