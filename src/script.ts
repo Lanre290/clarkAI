@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { toast } from "react-toastify";
 const API_KEY = import.meta.env.VITE_GEMINI_KEY;
 export const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -14,7 +15,7 @@ export const reactTiltOptions = {
   easing: "cubic-bezier(.03,.98,.52,.99)",
 };
 
-const suggestQuestion = async (dependencies: string[]) => {
+export const suggestQuestion = async (dependencies: string[]) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const result_ = await model.generateContent([
     ...dependencies,
@@ -28,4 +29,68 @@ const suggestQuestion = async (dependencies: string[]) => {
   return aiText;
 };
 
-export default suggestQuestion;
+interface SpeechSynthesisControls {
+  speak: () => void;
+  pause: () => void;
+  play: () => void;
+  stop: () => void;
+  getVoices: () => SpeechSynthesisVoice[];
+  setVoice: (voiceName: string) => void;
+  isSpeaking:() => boolean;
+}
+
+export class SpeechSynthesisService implements SpeechSynthesisControls {
+  public utterance: SpeechSynthesisUtterance;
+
+  constructor(text: string) {
+    if (!('speechSynthesis' in window)) {
+      toast.error('Speech synthesis not supported in this browser.');
+      throw new Error('Speech synthesis not supported');
+    }
+
+
+    this.utterance = new SpeechSynthesisUtterance(text);
+    this.utterance.pitch = 1.2;
+    this.utterance.rate = 1.0; 
+
+    this.utterance.onstart = () => {
+      console.log('Speech started');
+    };
+  }
+
+  speak = () => {
+    speechSynthesis.speak(this.utterance);
+  };
+
+  pause = () => {
+    speechSynthesis.pause();
+  };
+
+  play = () => {
+    speechSynthesis.resume();
+  };
+
+  stop = () => {
+    speechSynthesis.cancel();
+  };
+
+  getVoices = () => {
+    return speechSynthesis.getVoices();
+  };
+
+  isSpeaking = () => {
+    return speechSynthesis.speaking;
+  }
+
+  setVoice = (voiceName: string) => {
+    const voices = this.getVoices();
+    const selectedVoice = voices.find((voice) => voice.name === voiceName);
+    if (selectedVoice) {
+      this.utterance.voice = selectedVoice;
+    } else {
+      toast.error(`Voice "${voiceName}" not found.`);
+    }
+  };
+}
+
+

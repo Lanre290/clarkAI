@@ -13,13 +13,14 @@ import pdfToText from "react-pdftotext";
 import ReactMarkdown from "react-markdown";
 import Lottie from "react-lottie";
 import loadingAnimationData from "./../assets/animations/loadingAnimation2.json";
-import { genAI } from "../script";
-import suggestQuestion from "../script";
+import { genAI, SpeechSynthesisService } from "../script";
+import { suggestQuestion } from "../script";
 import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { BsHouse } from "react-icons/bs";
 import { CgClose } from "react-icons/cg";
 import { jsPDF } from "jspdf";
+import { BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
 
 export interface messageInterface {
   fromUser: boolean;
@@ -42,6 +43,7 @@ const UploadPdf = () => {
 
   const [filename, setFilename] = useState("");
   const [message, setMessage] = useState("");
+  const [speechText, setSpeechText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<messageInterface[]>([]);
   const [pdfMode, setPdfMode] = useState<"summary" | "explain" | "elaborate">(
@@ -60,8 +62,29 @@ const UploadPdf = () => {
   const [chatScreen, setChatScreen] = useState<boolean>(
     screen.width > 768 ? true : false
   );
+  const [speechService, setSpeechService] =
+    useState<SpeechSynthesisService | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeakingPaused, setIsSpeakingPaused] = useState(false);
 
   const { user, setUser } = useUser();
+
+  useEffect(() => {
+    const service = new SpeechSynthesisService(speechText);
+    setSpeechService(service);
+
+
+    try {
+      (speechService as any).utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+    } catch (error) {
+      
+    }
+    return () => {
+      service.stop();
+    };
+  }, [speechText]);
 
   useEffect(() => {
     if (!user) {
@@ -127,7 +150,7 @@ const UploadPdf = () => {
     setSuggestedQuestion("");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result_ = await model.generateContent([
-      "You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user's actions or context explicitly (e.g., 'the user did this or that'). Feel free to research the internet for more information.",
+      "You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question from the human accordingly Respond directly from your perspective, avoiding statements that reference the user's actions or context explicitly (e.g., 'the user did this or that'). Feel free to research the internet for more information.",
       ...dependencies,
     ]);
     const response = await result_.response;
@@ -152,29 +175,31 @@ const UploadPdf = () => {
     const doc = new jsPDF();
 
     // Select the HTML element
-    const content: HTMLElement = pdfHTMLElement.current as unknown as HTMLElement;
+    const content: HTMLElement =
+      pdfHTMLElement.current as unknown as HTMLElement;
 
     // Get the dimensions of the content
-    const contentWidth = content.offsetWidth- 20;
+    const contentWidth = content.offsetWidth - 20;
     const contentHeight = content.offsetHeight;
 
     // Calculate the scaling factor to fit the content to the PDF
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const scale = Math.min(pageWidth / contentWidth, pageHeight / contentHeight);
+    const scale = Math.min(
+      pageWidth / contentWidth,
+      pageHeight / contentHeight
+    );
 
     doc.html(content, {
-        callback: () => {
-            doc.save(`${filename}_${pdfMode}.pdf`);
-        },
-        margin: [10, 10, 10, 10],
-        html2canvas: {
-            scale, // Dynamically set scale based on content size
-        },
+      callback: () => {
+        doc.save(`${filename}_${pdfMode}.pdf`);
+      },
+      margin: [10, 10, 10, 10],
+      html2canvas: {
+        scale, // Dynamically set scale based on content size
+      },
     });
-};
-
-
+  };
 
   const submitPDFQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -214,13 +239,52 @@ const UploadPdf = () => {
 
       {/* loading animation div */}
       {isLoadingPDF && (
-        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col" style={{zIndex: 9999999}}>
+        <div
+          className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col"
+          style={{ zIndex: 9999999 }}
+        >
           <Lottie options={loadingAnimationOption} height={400} width={400} />
           <Fade direction="up" delay={1000} duration={1200}>
             <h3 className="text-white text-4xl text-center">
               Analyzing your pdf
             </h3>
           </Fade>
+        </div>
+      )}
+
+      {isSpeaking && (
+        <div className="fixed flex flex-col top-2 left-2 md:left-auto md:right-2 md:top-56 bg-black py-5 pl-5 pr-20 rounded-2xl z-50" style={{zIndex: 99999}}>
+          <div className="flex flex-row gap-x-3 mt-5">
+            <button
+              className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-gray-50 hover:bg-opacity-30"
+              onClick={() => {
+                if (isSpeakingPaused) {
+                  speechService?.play();
+                  setIsSpeakingPaused(false);
+                } else {
+                  speechService?.pause();
+                  setIsSpeakingPaused(true);
+                }
+              }}
+            >
+              {isSpeakingPaused == false ? (
+                <BiPause className="text-3xl text-white"></BiPause>
+              ) : (
+                <BiPlay className="text-3xl text-white"></BiPlay>
+              )}
+            </button>
+            {isSpeaking && (
+              <button
+                className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-gray-50 hover:bg-opacity-30"
+                onClick={() => {
+                  speechService?.stop();
+                  setIsSpeaking(false);
+                }}
+              >
+                <BiStop className="text-3xl text-white"></BiStop>
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -335,7 +399,7 @@ const UploadPdf = () => {
             className="md:w-1/3 lg:w-2/6 h-full fixed top-0 bottom-0 left-0 right-0 bg-white pt-20 md:pt-0 md:mt-7 md:static"
             style={{
               height: screen.width > 768 ? divHeight : "100vh",
-              zIndex: screen.width < 768 ? 9999999999999 : 5,
+              zIndex: screen.width < 768 ? 999 : 5,
               msTransitionDuration: "0.5s",
             }}
           >
@@ -369,10 +433,8 @@ const UploadPdf = () => {
                   {messages.map((message: messageInterface) => {
                     return (
                       <div
-                        className={`flex items-center ${
-                          message.fromUser == true
-                            ? "justify-end"
-                            : "justify-start"
+                        className={`flex flex-col justify-center ${
+                          message.fromUser == true ? "items-end" : "items-start"
                         } h-min`}
                       >
                         <div
@@ -385,6 +447,19 @@ const UploadPdf = () => {
                         >
                           <ReactMarkdown>{message.message}</ReactMarkdown>
                         </div>
+                        {message.fromUser == false && (
+                          <button
+                            onClick={(e: any) => {
+                              setSpeechText(message.message);
+                              speechService?.speak();
+                              setIsSpeaking(true);
+                              e.target.click();
+                            }}
+                            className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200"
+                          >
+                            <BiVolumeFull className="text-black text-2xl"></BiVolumeFull>
+                          </button>
+                        )}
                       </div>
                     );
                   })}
@@ -483,7 +558,7 @@ const UploadPdf = () => {
 
       {pdfFile !== null && (
         <button
-          className="fixed bottom-10 right-3 md:left-3 md:right-auto cursor-pointer bg-black p-5 rounded-full"
+          className="fixed bottom-10 left-3 md:right-auto cursor-pointer bg-black p-5 rounded-full"
           title="download pdf"
           onClick={generatePDF}
           style={{ zIndex: 9999 }}

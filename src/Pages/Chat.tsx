@@ -9,7 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { messageInterface } from "./UploadPdf";
 import { toast } from "react-toastify";
-import suggestQuestion from "../script";
+import {suggestQuestion, SpeechSynthesisService} from "../script";
 import ReactMarkdown from "react-markdown";
 import { genAI } from "../script";
 import { useUser } from "../context/UserContext";
