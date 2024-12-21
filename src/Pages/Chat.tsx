@@ -233,7 +233,7 @@ const Chat = () => {
         </div>
 
         <form
-          className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-2 left-2 right-2 mb-5 md:mb-16"
+          className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-7 md:bottom-2 left-2 right-2 mb-5 md:mb-16"
           style={{ borderRadius: "45px" }}
           onSubmit={submitQuestion}
         >
