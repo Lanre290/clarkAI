@@ -102,7 +102,7 @@ const Login = () => {
 
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-white">
+    <div className="flex flex-col w-screen h-screen bg-white overflow-x-hidden">
       {requestLoading && (
         <Fade direction="right" duration={300} style={{ zIndex: 9999 }}>
           <div className="fixed top-16 right-10 rounded-2xl bg-white flex flex-row gap-x-4 p-5 shadow-2xl pr-16">
