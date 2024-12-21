@@ -151,16 +151,30 @@ const UploadPdf = () => {
   const generatePDF = async () => {
     const doc = new jsPDF();
 
-    // Select the HTML element you want to render
-    const content = pdfHTMLElement.current;
+    // Select the HTML element
+    const content: HTMLElement = pdfHTMLElement.current as unknown as HTMLElement;
 
-    doc.html(content as unknown as string | HTMLElement, {
-      callback: () => {
-        doc.save(`${filename}_${pdfMode}.pdf`);
-      },
-      margin: [10, 10, 10, 10],
+    // Get the dimensions of the content
+    const contentWidth = content.offsetWidth- 20;
+    const contentHeight = content.offsetHeight;
+
+    // Calculate the scaling factor to fit the content to the PDF
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const scale = Math.min(pageWidth / contentWidth, pageHeight / contentHeight);
+
+    doc.html(content, {
+        callback: () => {
+            doc.save(`${filename}_${pdfMode}.pdf`);
+        },
+        margin: [10, 10, 10, 10],
+        html2canvas: {
+            scale, // Dynamically set scale based on content size
+        },
     });
-  };
+};
+
+
 
   const submitPDFQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
