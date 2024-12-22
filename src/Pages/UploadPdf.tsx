@@ -21,7 +21,7 @@ import { BsHouse } from "react-icons/bs";
 import { CgClose } from "react-icons/cg";
 import { jsPDF } from "jspdf";
 import { BiCopy, BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
-import { SlMicrophone } from "react-icons/sl";
+import Listening from "../components/Listening";
 
 export interface messageInterface {
   fromUser: boolean;
@@ -29,9 +29,9 @@ export interface messageInterface {
 }
 
 export const loadingAnimationOption = {
-  loop: true, // Set to false if you don't want it to loop
-  autoplay: true, // Set to true to autoplay the animation
-  animationData: loadingAnimationData, // The JSON data for the animation
+  loop: true,
+  autoplay: true,
+  animationData: loadingAnimationData,
   rendererSettings: {
     preserveAspectRatio: "xMidYMid slice",
   },
@@ -313,19 +313,7 @@ const UploadPdf = () => {
       )}
 
       {isListening && (
-        <div
-          className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 flex flex-col items-center justify-center"
-          style={{ zIndex: 99999 }}
-        >
-          <div className="glow">
-            <div className="glow_2">
-              <div className="w-36 h-36 rounded-full text-gray-50 text-2xl flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500">
-                <SlMicrophone className="text-4xl"></SlMicrophone>
-              </div>
-            </div>
-          </div>
-          <h3 className="text-white text-5xl">Listening...</h3>
-        </div>
+        <Listening></Listening>
       )}
 
       {isSpeaking && (
@@ -540,7 +528,7 @@ const UploadPdf = () => {
                               ? "rounded-tr-2xl rounded-tl-2xl rounded-bl-2xl bg-black text-white"
                               : "rounded-tr-2xl rounded-tl-2xl rounded-br-2xl bg-gray-200 text-black"
                           } p-4 w-fit`}
-                          style={{ maxWidth: "75%" }}
+                          style={{ maxWidth: "85%" }}
                         >
                           <ReactMarkdown>{message.message}</ReactMarkdown>
                         </div>
