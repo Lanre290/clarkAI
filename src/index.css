@@ -206,3 +206,45 @@ body .chat-page{
 .VIpgJd-ZVi9od-vH1Gmf-ibnC6b div .indicator {
   display: none;
 }
+
+.glow{
+  padding: 0px;
+  border-radius: 50%;
+  animation: glow 1s infinite;
+  background: rgb(58, 158, 158, 0.4);
+}
+
+.glow_2{
+  padding: 0px;
+  border-radius: 50%;
+  animation: glow_2 1.4s infinite;
+  background: rgb(58, 158, 158, 0.4);
+}
+
+
+@keyframes glow{
+  0%{
+    padding: 0px;
+    border-radius: 50%;
+  }
+  50%{
+    padding: 10px;
+    border-radius: 100%;
+  }
+  100%{
+    padding: 0px;
+    border-radius: 50%;
+  }
+}
+
+@keyframes glow_2{
+  0%{
+    padding: 5px;
+  }
+  50%{
+    padding: 20px;
+  }
+  100%{
+    padding: 10px;
+  }
+}

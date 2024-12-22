@@ -6,7 +6,7 @@ import {
   PiWaveform,
 } from "react-icons/pi";
 import Header from "../components/Header";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { toast } from "react-toastify";
 import pdfToText from "react-pdftotext";
@@ -21,6 +21,7 @@ import { BsHouse } from "react-icons/bs";
 import { CgClose } from "react-icons/cg";
 import { jsPDF } from "jspdf";
 import { BiCopy, BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
+import { SlMicrophone } from "react-icons/sl";
 
 export interface messageInterface {
   fromUser: boolean;
@@ -68,6 +69,15 @@ const UploadPdf = () => {
   const [isSpeakingPaused, setIsSpeakingPaused] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>();
   const [currentVoice, setCurrentVoice] = useState<string>();
+  const [isListening, setIsListening] = useState(false);
+  const [isMessageByVoice, setIsMessageByVoice] = useState(false);
+  const [speechToTextResponse, setSpeechToTextResponse] = useState("");
+
+  const submitMessageButton = useRef<null | HTMLButtonElement>(null);
+  const readButton = useRef<null | HTMLButtonElement>(null);
+
+  const SpeechRecognition = new ((window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition)();
 
   const { user, setUser } = useUser();
 
@@ -143,6 +153,24 @@ const UploadPdf = () => {
     }
   };
 
+  SpeechRecognition.onresult = (event: any) => {
+    const text = event.results[0][0].transcript;
+    setMessage(text);
+    setIsMessageByVoice(true);
+    setSpeechToTextResponse(text);
+    setIsListening(false);
+  };
+
+  const handleListen = () => {
+    if (isListening) {
+      SpeechRecognition.stop();
+      setIsListening(false);
+    } else {
+      SpeechRecognition.start();
+      setIsListening(true);
+    }
+  };
+
   const generateAIAnswer = async (
     dependencies: string[],
     userMessage: messageInterface
@@ -164,10 +192,29 @@ const UploadPdf = () => {
 
     setMessages([...messages, userMessage, aiResponse]);
     setIsTyping(false);
+
+    setIsMessageByVoice(false);
     const AISuggestedQuestion = suggestQuestion(dependencies);
     const newQuestion = await AISuggestedQuestion;
     if (suggestedQuestion != newQuestion) {
       setSuggestedQuestion(newQuestion); //check if there was an erro generating question
+    }
+
+    aiSpeak(aiResponse.message);
+  };
+
+  const aiSpeak = (text: string) => {
+    if (isMessageByVoice) {
+      setSpeechText(text);
+      if (currentVoice) {
+        speechService?.setVoice(currentVoice);
+      }
+      speechService?.stop();
+      speechService?.speak();
+      setTimeout(() => {
+        readButton.current?.click();
+      }, 500);
+      setIsSpeaking(true);
     }
   };
 
@@ -201,8 +248,12 @@ const UploadPdf = () => {
     });
   };
 
-  const submitPDFQuestion = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitPDFQuestion = async (e?: React.FormEvent) => {
+    try {
+      e.preventDefault();
+    } catch (error) {
+      
+    }
 
     try {
       setIsTyping(true);
@@ -233,6 +284,12 @@ const UploadPdf = () => {
     }
   };
 
+  useLayoutEffect(() => {
+    setTimeout(() => {
+      submitPDFQuestion()
+    }, 300);
+  }, [speechToTextResponse]);
+
   return (
     <>
       <Header></Header>
@@ -241,7 +298,7 @@ const UploadPdf = () => {
       {isLoadingPDF && (
         <div
           className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col"
-          style={{ zIndex: 9999999 }}
+          style={{ zIndex: 99999 }}
         >
           <Lottie options={loadingAnimationOption} height={400} width={400} />
           <Fade direction="up" delay={1000} duration={1200}>
@@ -249,6 +306,22 @@ const UploadPdf = () => {
               Analyzing your pdf
             </h3>
           </Fade>
+        </div>
+      )}
+
+      {isListening && (
+        <div
+          className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 flex flex-col items-center justify-center"
+          style={{ zIndex: 99999 }}
+        >
+          <div className="glow">
+            <div className="glow_2">
+              <div className="w-36 h-36 rounded-full text-gray-50 text-2xl flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500">
+                <SlMicrophone className="text-4xl"></SlMicrophone>
+              </div>
+            </div>
+          </div>
+          <h3 className="text-white text-5xl">Listening...</h3>
         </div>
       )}
 
@@ -289,13 +362,15 @@ const UploadPdf = () => {
             )}
           </div>
           <select
-            className="py-2 px-5 rounded-2xl cursor-pointer border border-white bg-transparent mt-5 text-white"
+            className="py-2 px-5 rounded-2xl cursor-pointer border border-white bg-transparent mt-5 text-white w-48"
             onInput={(e: any) => {
               speechService?.setVoice(e.target.value);
               setCurrentVoice(e.target.value);
             }}
           >
-            <option value="">Change voice</option>
+            <option value="" className="bg-black text-white">
+              Change voice
+            </option>
             {voices?.map((voice) => {
               return (
                 <option value={voice.name} className="bg-black text-white">
@@ -469,14 +544,16 @@ const UploadPdf = () => {
                         {message.fromUser == false && (
                           <div className="flex flex-row">
                             <button
+                              ref={readButton}
                               onClick={(e: any) => {
+                                speechService?.stop();
                                 setSpeechText(message.message);
                                 if (currentVoice) {
                                   speechService?.setVoice(currentVoice);
                                 }
                                 speechService?.speak();
                                 setIsSpeaking(true);
-                                if (!speechService?.isSpeaking) {
+                                if (!speechService?.isSpeaking()) {
                                   e.target.click();
                                 }
                               }}
@@ -484,10 +561,13 @@ const UploadPdf = () => {
                             >
                               <BiVolumeFull className="text-black text-2xl"></BiVolumeFull>
                             </button>
-                            <button className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200" onClick={() => {
-                              navigator.clipboard.writeText(message.message)
-                              toast.info('Text copied to clipboard.');
-                            }}>
+                            <button
+                              className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200"
+                              onClick={() => {
+                                navigator.clipboard.writeText(message.message);
+                                toast.info("Text copied to clipboard.");
+                              }}
+                            >
                               <BiCopy className="text-black text-2xl"></BiCopy>
                             </button>
                           </div>
@@ -562,6 +642,8 @@ const UploadPdf = () => {
                   className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
                     pdfFile == null && "opacity-50 cursor-not-allowed"
                   }`}
+                  type="button"
+                  onClick={handleListen}
                   style={{ minWidth: "48px" }}
                   disabled={message.length > 0 && pdfFile !== null && false}
                 >
@@ -574,6 +656,7 @@ const UploadPdf = () => {
                       className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
                         pdfFile == null && "opacity-50 cursor-not-allowed"
                       }`}
+                      ref={submitMessageButton}
                       style={{ minWidth: "48px" }}
                       disabled={message.length > 0 && pdfFile !== null && false}
                       type="submit"
