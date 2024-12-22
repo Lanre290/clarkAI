@@ -680,7 +680,7 @@ const UploadPdf = () => {
           className="fixed bottom-10 left-3 md:right-auto cursor-pointer bg-black p-5 rounded-full"
           title="download pdf"
           onClick={generatePDF}
-          style={{ zIndex: 9999 }}
+          style={{ zIndex: 99 }}
         >
           <PiDownloadThin className="text-4xl text-white"></PiDownloadThin>
         </button>
