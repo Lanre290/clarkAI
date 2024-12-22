@@ -161,6 +161,10 @@ const UploadPdf = () => {
     setIsListening(false);
   };
 
+  SpeechRecognition.onend = () => {
+    setIsListening(false);
+  };
+
   const handleListen = () => {
     if (isListening) {
       SpeechRecognition.stop();
@@ -210,7 +214,6 @@ const UploadPdf = () => {
         speechService?.setVoice(currentVoice);
       }
       speechService?.stop();
-      speechService?.speak();
       setTimeout(() => {
         readButton.current?.click();
       }, 500);
@@ -250,7 +253,7 @@ const UploadPdf = () => {
 
   const submitPDFQuestion = async (e?: React.FormEvent) => {
     try {
-      e.preventDefault();
+      (e as any).preventDefault();
     } catch (error) {
       
     }
@@ -547,15 +550,16 @@ const UploadPdf = () => {
                               ref={readButton}
                               onClick={(e: any) => {
                                 speechService?.stop();
+                                speechService?.speak();
+                                speechService?.stop();
+                                setIsSpeaking(false)
                                 setSpeechText(message.message);
                                 if (currentVoice) {
                                   speechService?.setVoice(currentVoice);
                                 }
                                 speechService?.speak();
                                 setIsSpeaking(true);
-                                if (!speechService?.isSpeaking()) {
-                                  e.target.click();
-                                }
+                                e.target.click();
                               }}
                               className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200"
                             >
