@@ -20,7 +20,7 @@ import { useUser } from "../context/UserContext";
 import { BsHouse } from "react-icons/bs";
 import { CgClose } from "react-icons/cg";
 import { jsPDF } from "jspdf";
-import { BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
+import { BiCopy, BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
 
 export interface messageInterface {
   fromUser: boolean;
@@ -66,21 +66,21 @@ const UploadPdf = () => {
     useState<SpeechSynthesisService | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSpeakingPaused, setIsSpeakingPaused] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>();
+  const [currentVoice, setCurrentVoice] = useState<string>();
 
   const { user, setUser } = useUser();
 
   useEffect(() => {
     const service = new SpeechSynthesisService(speechText);
     setSpeechService(service);
-
+    setVoices(speechService?.getVoices());
 
     try {
       (speechService as any).utterance.onend = () => {
         setIsSpeaking(false);
       };
-    } catch (error) {
-      
-    }
+    } catch (error) {}
     return () => {
       service.stop();
     };
@@ -253,7 +253,10 @@ const UploadPdf = () => {
       )}
 
       {isSpeaking && (
-        <div className="fixed flex flex-col top-2 left-2 md:left-auto md:right-2 md:top-56 bg-black py-5 pl-5 pr-20 rounded-2xl z-50" style={{zIndex: 99999}}>
+        <div
+          className="fixed flex flex-col top-2 left-2 md:left-auto md:right-2 md:top-56 bg-black py-5 pl-5 pr-20 rounded-2xl z-50"
+          style={{ zIndex: 99999 }}
+        >
           <div className="flex flex-row gap-x-3 mt-5">
             <button
               className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-gray-50 hover:bg-opacity-30"
@@ -285,6 +288,22 @@ const UploadPdf = () => {
               </button>
             )}
           </div>
+          <select
+            className="py-2 px-5 rounded-2xl cursor-pointer border border-white bg-transparent mt-5 text-white"
+            onInput={(e: any) => {
+              speechService?.setVoice(e.target.value);
+              setCurrentVoice(e.target.value);
+            }}
+          >
+            <option value="">Change voice</option>
+            {voices?.map((voice) => {
+              return (
+                <option value={voice.name} className="bg-black text-white">
+                  {voice.name}
+                </option>
+              );
+            })}
+          </select>
         </div>
       )}
 
@@ -448,17 +467,30 @@ const UploadPdf = () => {
                           <ReactMarkdown>{message.message}</ReactMarkdown>
                         </div>
                         {message.fromUser == false && (
-                          <button
-                            onClick={(e: any) => {
-                              setSpeechText(message.message);
-                              speechService?.speak();
-                              setIsSpeaking(true);
-                              e.target.click();
-                            }}
-                            className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200"
-                          >
-                            <BiVolumeFull className="text-black text-2xl"></BiVolumeFull>
-                          </button>
+                          <div className="flex flex-row">
+                            <button
+                              onClick={(e: any) => {
+                                setSpeechText(message.message);
+                                if (currentVoice) {
+                                  speechService?.setVoice(currentVoice);
+                                }
+                                speechService?.speak();
+                                setIsSpeaking(true);
+                                if (!speechService?.isSpeaking) {
+                                  e.target.click();
+                                }
+                              }}
+                              className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200"
+                            >
+                              <BiVolumeFull className="text-black text-2xl"></BiVolumeFull>
+                            </button>
+                            <button className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200" onClick={() => {
+                              navigator.clipboard.writeText(message.message)
+                              toast.info('Text copied to clipboard.');
+                            }}>
+                              <BiCopy className="text-black text-2xl"></BiCopy>
+                            </button>
+                          </div>
                         )}
                       </div>
                     );

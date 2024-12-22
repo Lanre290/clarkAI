@@ -50,16 +50,17 @@ export class SpeechSynthesisService implements SpeechSynthesisControls {
 
 
     this.utterance = new SpeechSynthesisUtterance(text);
-    this.utterance.pitch = 1.2;
-    this.utterance.rate = 1.0; 
+    this.utterance.pitch = 1.1;
+    this.utterance.rate = 0.9; 
 
-    this.utterance.onstart = () => {
-      console.log('Speech started');
-    };
+    
   }
 
   speak = () => {
     speechSynthesis.speak(this.utterance);
+    if(!speechSynthesis.speaking){
+      speechSynthesis.speak(this.utterance);
+    }
   };
 
   pause = () => {
@@ -86,11 +87,19 @@ export class SpeechSynthesisService implements SpeechSynthesisControls {
     const voices = this.getVoices();
     const selectedVoice = voices.find((voice) => voice.name === voiceName);
     if (selectedVoice) {
+      speechSynthesis.cancel();
+  
       this.utterance.voice = selectedVoice;
+      speechSynthesis.speak(this.utterance);
     } else {
       toast.error(`Voice "${voiceName}" not found.`);
     }
   };
+  
 }
 
 
+let test = new SpeechSynthesisService('');
+test.speak();
+test.speak();
+test.speak();
