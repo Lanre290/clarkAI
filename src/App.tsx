@@ -23,6 +23,7 @@ function App() {
         <UseCheckUserSession>
           <Routes>
             <Route path="/" element={<Navigate to="/home"></Navigate>} />
+            <Route path="/index.html" element={<Navigate to="/home"></Navigate>} />
             <Route path="/home" element={<Home />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/upload-pdf" element={<UploadPdf />} />
