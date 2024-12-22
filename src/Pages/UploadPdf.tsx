@@ -493,7 +493,7 @@ const UploadPdf = () => {
         {/* chat area */}
         {chatScreen && (
           <div
-            className="md:w-1/3 lg:w-2/6 h-full fixed top-0 bottom-0 left-0 right-0 bg-white pt-20 md:pt-0 md:mt-7 md:static"
+            className="md:w-1/3 lg:w-2/6 h-full fixed top-0 bottom-0 left-0 right-0 bg-white pt-20 md:pt-0 md:mt-7 md:static overflow-y-hidden"
             style={{
               height: screen.width > 768 ? divHeight : "100vh",
               zIndex: screen.width < 768 ? 999 : 5,
@@ -526,7 +526,7 @@ const UploadPdf = () => {
               {/* main chat area div */}
 
               {messages.length > 0 && (
-                <div className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 pb-32 md:pb-24">
+                <div className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 mb-28 md:pb-24">
                   {messages.map((message: messageInterface) => {
                     return (
                       <div
