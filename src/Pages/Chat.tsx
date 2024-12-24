@@ -295,6 +295,7 @@ const Chat = () => {
     };
 
     setMessages([...messages, message_]);
+    scrollToBottom();
 
     generateAIAnswer(
       [
@@ -608,7 +609,7 @@ const Chat = () => {
                         message.fromUser == true
                           ? "rounded-tr-2xl rounded-tl-2xl rounded-bl-2xl bg-black text-white"
                           : "rounded-tr-2xl rounded-tl-2xl rounded-br-2xl bg-gray-200 text-black"
-                      } p-4 w-fit`}
+                      } p-4 w-fit message-cont`}
                       style={{ maxWidth: "85%" }}
                     >
                       <ReactMarkdown>{message.message}</ReactMarkdown>
@@ -674,7 +675,7 @@ const Chat = () => {
 
               {suggestedQuestion.trim().length > 0 && (
                 <div
-                  className={`text-black border border-black rounded-3xl flex flex-row bg-transparent gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl hover:bg-gray-200 cursor-pointer`}
+                  className={`text-black border border-black rounded-3xl flex flex-row bg-transparent gap-x-4 p-3 md:p-3 md:px-6 items-center justify-center drop-shadow-2xl hover:bg-gray-200 cursor-pointer`}
                   onClick={async () => {
                     setIsTyping(true);
                     let processedMessage = {

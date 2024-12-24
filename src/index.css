@@ -9,7 +9,7 @@
 } */
 
 
-pre {
+pre, a {
   white-space: pre-wrap; /* Allow text to wrap */
   word-wrap: break-word; /* Break long words to prevent overflow */
 }
@@ -32,6 +32,10 @@ body .chat-page{
 }
 .operation-tile:hover {
   scale: 1.04;
+}
+
+.message-cont a{
+  color: rgb(0, 110, 184);
 }
 
 .operation-tile .arrow {
