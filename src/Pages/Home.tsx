@@ -57,7 +57,7 @@ const Home = () => {
   };
 
   const loadUser = async () => {
-    const token = user?.token;
+    const token = localStorage.getItem('token');
     const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/user`,
         {
@@ -77,16 +77,8 @@ const Home = () => {
         setStreakDays(user_.streak_count);
         setIsLoading(false);
       } else {
-        if(!localStorage.getItem('user')){
-          toast.error('Error fetching user Data. Please login again.');
-          ('/login');
-        }
-        else{
-          let user__ = JSON.parse(localStorage.getItem('user') as string);
-          setName(user__.user.name);
-          setStreakDays(user__.user.streak_count);
-          setIsLoading(false);
-        }
+        toast.error('Error fetching user Data. Please login again.');
+        ('/login');
       }
   }
 

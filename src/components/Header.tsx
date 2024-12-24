@@ -53,11 +53,12 @@ const Header = () => {
   
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = JSON.parse(localStorage.getItem("user") as string);
+
     setIsPremium(
-      user?.user.is_premium ||
-        (storedUser && JSON.parse(storedUser)?.user?.is_premium) ||
-        false
+      (user as any)?.is_premium ?? 
+      (storedUser ? storedUser?.user?.is_premium : false) ?? 
+      false
     );
   }, [user]);
 

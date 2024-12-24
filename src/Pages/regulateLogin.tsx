@@ -1,37 +1,76 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import { toast } from "react-toastify";
 
-const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-    const { user, setUser } = useUser();
-    const navigate = useNavigate();
-    const location = window.location;
+const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
+  const { user, setUser } = useUser();
+  const navigate = useNavigate();
+  const location = window.location;
 
-    useEffect(() => {
-        if (!user && !localStorage.getItem("user") && (location.pathname != "/login" || location.pathname as string != "/signup")) {
-            if(location.pathname == '/login'){
-                navigate('/login')
+  useEffect(() => {
+    if (
+      !user &&
+      !localStorage.getItem("user") &&
+      (location.pathname != "/login" ||
+        (location.pathname as string) != "/signup")
+    ) {
+      if (location.pathname == "/login") {
+        navigate("/login");
+      } else if (location.pathname == "/signup") {
+        navigate("/signup");
+      } else if (location.pathname == "/") {
+        navigate("/");
+      } else {
+        navigate("/login");
+      }
+    } else {
+      if (localStorage.getItem("token")) {
+        const regulate = async () => {
+          const token = localStorage.getItem("token");
+
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/v1/user`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
             }
-            else if(location.pathname == '/signup'){
-                navigate('/signup')
-            }
-            else if(location.pathname == '/'){
-                navigate('/')
-            }
-            else{
-                navigate('/login');
-            }
-        } else {
-            const user_: any = JSON.parse(localStorage.getItem("user") as string);
+          );
+
+          if (response.ok) {
+            let res = await response.json();
+            const user_ = res.data;
             setUser(user_);
-            
-            if(location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/"){
-                navigate('/home');
-            }
-        }
-    }, []);
+            localStorage.setItem('user', JSON.stringify(user_));
+            console.log(user_)
+          } else {
+            toast.error("Error fetching user Data. Please login again.");
+            navigate("/login");
+          }
+        };
 
-    return <>{children}</>;
+        regulate();
+
+        if (
+          location.pathname === "/login" ||
+          location.pathname === "/signup" ||
+          location.pathname === "/"
+        ) {
+          navigate("/home");
+        }
+      } else {
+        localStorage.clear();
+        navigate("/login");
+      }
+    }
+  }, []);
+
+  return <>{children}</>;
 };
 
 export default UseCheckUserSession;

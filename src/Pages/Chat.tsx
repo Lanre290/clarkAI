@@ -23,7 +23,7 @@ import { toast } from "react-toastify";
 import { suggestQuestion, SpeechSynthesisService } from "../script";
 import ReactMarkdown from "react-markdown";
 import { genAI } from "../script";
-import { useUser } from "../context/UserContext";
+import { User, useUser } from "../context/UserContext";
 import { BsHouse } from "react-icons/bs";
 import Listening from "../components/Listening";
 import Loading from "../components/Loading";
@@ -63,12 +63,12 @@ const Chat = () => {
   const youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
 
   useEffect(() => {
+    const user_: any = JSON.parse(localStorage.getItem("user") as string);
     if (!user) {
-      const user = JSON.parse(localStorage.getItem("user") as string);
-      setUser(user);
-      setName(user?.user.name as string);
+      setUser(user_);
+      setName(user_?.name as string);
     } else {
-      setName(user?.user.name as string);
+      setName(user_?.name as string);
     }
   }, []);
 
@@ -545,7 +545,9 @@ const Chat = () => {
         </div>
       </div>
 
-      <div className="flex flex-col w-full h-screen md:w-3/6 mx-auto justify-center items-center relative pt-16">
+
+
+      <div className="flex flex-col w-full h-screen md:w-11/12 lg:w-4/6 xl:w-3/6 mx-auto justify-center items-center relative pt-16">
         <div className="flex flex-row items-center justify-between md:justify-end w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
           <Link to={"/home"} className="md:hidden">
             <button className="cursor-pointer" title="My profile">

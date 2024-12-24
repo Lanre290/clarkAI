@@ -99,12 +99,12 @@ const UploadPdf = () => {
   }, [speechText]);
 
   useEffect(() => {
+    const user_: any = JSON.parse(localStorage.getItem("user") as string);
     if (!user) {
-      const user = JSON.parse(localStorage.getItem("user") as string);
-      setUser(user);
-      setName(user?.user.name as string);
+      setUser(user_);
+      setName(user_?.name as string);
     } else {
-      setName(user?.user.name as string);
+      setName(user_?.name as string);
     }
   }, []);
 

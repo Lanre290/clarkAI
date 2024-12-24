@@ -13,9 +13,9 @@ const Profile = () => {
     const [email, setEmail] = useState<string>('');
 
     useEffect(() => {
-        setName(user?.user.name as string);
-        setEmail(user?.user.email as string);
-        setStreakDays(user?.user.streak_count as number);
+        setName((user as any)?.name as string);
+        setEmail((user as any)?.email as string);
+        setStreakDays((user as any)?.streak_count as number);
     }, [])
 
     return(
@@ -32,7 +32,7 @@ const Profile = () => {
                 <div className="flex flex-col w-full px-2 items-center md:w-2/3 lg:w-2/4 mx-auto gap-5 mt-10 pb-20 md:pb-0 tilt-cont">
                     <div className="w-full mx-2 rounded-3xl bg-blue-300 text-white h-64">
                         <h3 className="text-white text-start w-11/12 h-full flex items-center text-2xl mx-auto">
-                            Nationality: {user?.user.country as string}<br />
+                            Nationality: {(user as any)?.country as string}<br />
                             Streak: {streakDays} days <br />
                             Email: {email}
                         </h3>

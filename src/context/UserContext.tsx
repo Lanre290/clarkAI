@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 
-interface User {
+export interface User {
     token: string;
     user: {
         id: string;
