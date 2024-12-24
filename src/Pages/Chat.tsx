@@ -542,7 +542,7 @@ const Chat = () => {
         </div>
       </div>
 
-      <div className="flex flex-col w-full h-screen md:w-3/6 mx-auto justify-center items-center relative py-14">
+      <div className="flex flex-col w-full h-screen md:w-3/6 mx-auto justify-center items-center relative pt-16">
         <div className="flex flex-row items-center justify-between md:justify-end w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
           <Link to={"/home"} className="md:hidden">
             <button className="cursor-pointer" title="My profile">
@@ -569,7 +569,7 @@ const Chat = () => {
           )}
           {
             <button
-              className="absolute bottom-40 right-10 cursor-pointer bg-black h-10 w-10 rounded-full z-40 flex items-center justify-center"
+              className="absolute bottom-24 right-2 md:bottom-40 md:right-10 cursor-pointer bg-black h-10 w-10 rounded-full z-40 flex items-center justify-center"
               onClick={scrollToBottom}
             >
               <PiArrowDown className="text-white text-2xl"></PiArrowDown>
@@ -577,7 +577,7 @@ const Chat = () => {
           }
           {messages.length > 0 && (
             <div
-              className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 mb-24"
+              className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 mb-20"
               ref={chatWindow}
             >
               {messages.map((message: messageInterface) => {
@@ -696,7 +696,7 @@ const Chat = () => {
         </div>
 
         <form
-          className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-7 md:bottom-2 left-2 right-2 mb-5 md:mb-16"
+          className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 absolute bottom-7 md:bottom-2 left-2 right-2 mt-0 -mb-5 md:mb-16"
           style={{ borderRadius: "45px" }}
           onSubmit={submitQuestion}
         >
