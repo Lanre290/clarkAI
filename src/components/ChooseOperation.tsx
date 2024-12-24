@@ -9,7 +9,7 @@ const ChooseOperation = () => {
         className="w-full mx-2 md:w-auto md:mx-0" mt-1
         to={'/upload-pdf'}>
         <OperationTile
-          icon={<PiUploadThin className="text-7xl text-black mx-auto" />}
+          icon={<PiUploadThin className="text-5xl md:text-7xl text-black mx-auto" />}
           text={`Upload PDF`}
         ></OperationTile>
       </Link>
@@ -19,7 +19,7 @@ const ChooseOperation = () => {
         to={'/chat'}
         >
         <OperationTile
-            icon={<PiRobotThin className="text-7xl text-black mx-auto" />}
+            icon={<PiRobotThin className="text-5xl md:text-7xl text-black mx-auto" />}
             text={`Chat with AI`}
         ></OperationTile>
       </Link>
@@ -29,7 +29,7 @@ const ChooseOperation = () => {
         to={'/scanner'}
         >
         <OperationTile
-            icon={<PiScanThin className="text-7xl text-black mx-auto" />}
+            icon={<PiScanThin className="text-5xl md:text-7xl text-black mx-auto" />}
             text={`AI Scanner \n Scan to solve`}
         ></OperationTile>
       </Link>

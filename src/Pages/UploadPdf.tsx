@@ -128,7 +128,6 @@ const UploadPdf = () => {
       });
   };
 
-  //   useEffect for when user changes the type of explanation they want
   useEffect(() => {
     try {
       if (hasAppLoaded == true) {
@@ -203,7 +202,7 @@ const UploadPdf = () => {
     const AISuggestedQuestion = suggestQuestion(dependencies);
     const newQuestion = await AISuggestedQuestion;
     if (suggestedQuestion != newQuestion) {
-      setSuggestedQuestion(newQuestion); //check if there was an erro generating question
+      setSuggestedQuestion(newQuestion);
     }
 
     aiSpeak(aiResponse.message);

@@ -106,7 +106,7 @@ const Home = () => {
 
       {isLoading && (
         <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col z-50">
-          <Lottie options={loadingUserOption} height={400} width={400} />
+          <Lottie options={loadingUserOption} height={screen.width < 768 ? 300 : 400} width={screen.width < 768 ? 300 : 400} />
           <Fade direction="up" delay={1000} duration={1200}>
             <h3 className="text-white text-4xl text-center">
               Getting user data
@@ -121,10 +121,10 @@ const Home = () => {
             <img
               src={ideaImage}
               alt=""
-              className="w-14 h-14 object-cover absolute top-6 right-5 md:top-16 md:right-7"
+              className="w-10 h-10 md:w-14 md:h-14 object-cover absolute top-6 right-7 md:top-16 md:right-7"
             />
             <button
-              className="absolute top-6 left-4 md:top-16 md:left-7 text-white cursor-pointer"
+              className="absolute top-6 left-7 md:top-16 md:left-7 text-white cursor-pointer"
               title={factCopied == true ? "Copied" : "Copy to clipboard"}
               onClick={() => {
                 navigator.clipboard.writeText(randomFact);
@@ -136,9 +136,9 @@ const Home = () => {
               }}
             >
               {factCopied == false ? (
-                <PiCopy className="text-white text-6xl"></PiCopy>
+                <PiCopy className="text-white text-4xl md:text-6xl"></PiCopy>
               ) : (
-                <PiCheck className="text-white text-6xl"></PiCheck>
+                <PiCheck className="text-white text-4xl md:text-6xl"></PiCheck>
               )}
             </button>
             <div className="flex flex-row justify-between w-full">
@@ -161,7 +161,7 @@ const Home = () => {
               <img
                 src={streakImage}
                 alt=""
-                className="w-14 h-1w-14 object-cover absolute top-10 right-10"
+                className="h-10 md:w-14 w-10 md:h-14 object-cover absolute right-5 top-6 md:right-10"
               />
               <h3 className="h-80 text-white bg-blue-300 w-full rounded-3xl flex flex-col justify-center items-center text-center text-2xl">
                 <h3 className="text-6xl text-white">{streakDays}</h3>

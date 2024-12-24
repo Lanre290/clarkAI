@@ -19,7 +19,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({ childre
                 navigate('/')
             }
             else{
-                navigate("/home");
+                navigate('/login');
             }
         } else {
             const user_: any = JSON.parse(localStorage.getItem("user") as string);

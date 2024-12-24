@@ -259,7 +259,9 @@ const Chat = () => {
         fetchTranscript();
       } else {
         setIsLoading(false);
-        throw new Error("Error");
+        setFetchingYoutubeData(false);
+        console.log('fwf');
+        throw new Error('Invalid video ID.');
       }
     } catch (error: any) {
       toast.error(error);
