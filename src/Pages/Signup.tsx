@@ -143,6 +143,7 @@ const Signup = () => {
         }, 200);
       } else {
         setLoading(false);
+        setRequestLoading(false);
         const res = await response.json();
         toast.error(res.message);
       }
@@ -225,8 +226,8 @@ const Signup = () => {
             </div>
 
             <input
-              type="password"
-              className="text-3xl text-black placeholder-black py-3 md:py-9 px-4 font-light border border-black rounded-xl text-center"
+              type="text"
+              className="text-3xl text-black mx-5 placeholder-black py-3 md:py-9 px-4 font-light border border-black rounded-xl text-center"
               placeholder="Enter OTP..."
               id=""
               maxLength={4}

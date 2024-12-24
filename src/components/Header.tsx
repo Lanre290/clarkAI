@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PiCrownBold, PiRobotThin, PiUserCircleThin } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
@@ -13,43 +13,56 @@ declare global {
 const Header = () => {
   const { user } = useUser();
   const [isPremium, setIsPremium] = useState(true);
+  const googleElement = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.onload = () => {
-      const initializeGoogleTranslate = () => {
-        // Clear any existing translation elements
-        const translateElement = document.getElementById(
-          "google_translate_element"
-        );
-        if (translateElement) {
-          translateElement.innerHTML = "";
-        }
-
-        // Reinitialize the Google Translate widget
+    const initializeGoogleTranslate = () => {
+      console.log("Initializing Google Translate...");
+      if (googleElement.current) {
+        googleElement.current.innerHTML = "";
         new window.google.translate.TranslateElement(
           {
             pageLanguage: "en",
             includedLanguages: "es,fr,de,it,pt,zh,ja,ko,ar,ru,hi,sw",
-            layout:
-              window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
           },
-          "google_translate_element"
+          googleElement.current
         );
-      };
-
+      }
+    };
+  
+    const script = document.createElement("script");
+    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    script.onload = () => {
+      console.log("Google Translate script loaded.");
       if (window.google && window.google.translate) {
         initializeGoogleTranslate();
       } else {
         window.googleTranslateElementInit = initializeGoogleTranslate;
       }
     };
-
-    
-    setIsPremium(user?.user.is_premium as boolean || JSON.parse((localStorage.getItem('user')) as any).user.is_premium as boolean);
+  
+    script.onerror = () => console.error("Failed to load Google Translate script.");
+    document.body.appendChild(script);
+  
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
+  
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    setIsPremium(
+      user?.user.is_premium ||
+        (storedUser && JSON.parse(storedUser)?.user?.is_premium) ||
+        false
+    );
+  }, [user]);
 
   return (
-    <div className="w-full h-full flex flex-row justify-between shadow-xl" style={{zIndex: 100}}>
+    <div className="w-full h-full flex flex-row justify-between shadow-xl" style={{ zIndex: 100 }}>
       <div className="flex flex-row items-center justify-center">
         <div className="text-black font-light text-2xl items-center justify-center m-4 flex flex-row">
           <PiRobotThin className="text-5xl"></PiRobotThin>
@@ -58,8 +71,8 @@ const Header = () => {
       </div>
 
       <div className="flex flex-row justify-center items-center mr-2 md:mr-16 gap-x-3">
-        <div id="google_translate_element"></div>
-        {isPremium == true ? (
+        <div ref={googleElement}></div>
+        {isPremium ? (
           <button className="bg-transparent text-white rounded-3xl cursor-pointer flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl border border-gold">
             <PiCrownBold className="text-2xl gold"></PiCrownBold>
             <h3 className="hidden md:flex gold">premium</h3>

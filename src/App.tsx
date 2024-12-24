@@ -14,6 +14,7 @@ import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import Scanner from "./Pages/Scanner";
 import UseCheckUserSession from "./Pages/regulateLogin";
+import HomePage from "./Pages/Homepage";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Styling></Styling>
         <UseCheckUserSession>
           <Routes>
-            <Route path="/" element={<Navigate to="/home"></Navigate>} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/index.html" element={<Navigate to="/home"></Navigate>} />
             <Route path="/home" element={<Home />} />
             <Route path="/chat" element={<Chat />} />

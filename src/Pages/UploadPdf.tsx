@@ -24,6 +24,8 @@ import { BiCopy, BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
 import Listening from "../components/Listening";
 
 export interface messageInterface {
+  src?:string;
+  video?:boolean;
   fromUser: boolean;
   message: string;
 }
@@ -536,9 +538,7 @@ const UploadPdf = () => {
                           <div className="flex flex-row">
                             <button
                               ref={readButton}
-                              onClick={(e: any) => {
-                                speechService?.stop();
-                                speechService?.speak();
+                              onClick={() => {
                                 speechService?.stop();
                                 setIsSpeaking(false)
                                 setSpeechText(message.message);
@@ -546,8 +546,8 @@ const UploadPdf = () => {
                                   speechService?.setVoice(currentVoice);
                                 }
                                 speechService?.speak();
+                                speechService?.speak();
                                 setIsSpeaking(true);
-                                e.target.click();
                               }}
                               className="cursor-pointer mt-1 mb-3 p-3 rounded-full hover:bg-gray-200"
                             >

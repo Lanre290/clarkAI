@@ -8,7 +8,15 @@ import {
   BiStop,
   BiVolumeFull,
 } from "react-icons/bi";
-import { PiArrowDown, PiArrowUpBold, PiUserCircleThin, PiWaveform } from "react-icons/pi";
+import {
+  PiAirplane,
+  PiArrowDown,
+  PiArrowUpBold,
+  PiLink,
+  PiPaperPlane,
+  PiUserCircleThin,
+  PiWaveform,
+} from "react-icons/pi";
 import { Link } from "react-router-dom";
 import { messageInterface } from "./UploadPdf";
 import { toast } from "react-toastify";
@@ -18,6 +26,9 @@ import { genAI } from "../script";
 import { useUser } from "../context/UserContext";
 import { BsHouse } from "react-icons/bs";
 import Listening from "../components/Listening";
+import Loading from "../components/Loading";
+import axios from "axios";
+import { CgClose } from "react-icons/cg";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -37,12 +48,19 @@ const Chat = () => {
   const [isMessageByVoice, setIsMessageByVoice] = useState(false);
   const [speechToTextResponse, setSpeechToTextResponse] = useState("");
   const [speechText, setSpeechText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [youtubeLink, setYoutubeLink] = useState("");
+  const [isLinkLayout, setIsLinkLayout] = useState(false);
+  const [videoData, setvideoData] = useState(null);
+  const [transcript, setTranscript] = useState("");
+  const [fetchingYoutubeData, setFetchingYoutubeData] = useState<boolean>(false);
 
   const readButton = useRef<null | HTMLButtonElement>(null);
   const { user, setUser } = useUser();
   const SpeechRecognition = new ((window as any).SpeechRecognition ||
     (window as any).webkitSpeechRecognition)();
   const chatWindow = useRef<HTMLDivElement & any>();
+  const youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
 
   useEffect(() => {
     if (!user) {
@@ -103,16 +121,20 @@ const Chat = () => {
     const newQuestion = await AISuggestedQuestion;
 
     if (suggestedQuestion != newQuestion) {
-      setSuggestedQuestion(newQuestion); //check if there was an error generating question
+      setSuggestedQuestion(newQuestion);
     }
 
-    scrollToBottom()
+    scrollToBottom();
     aiSpeak(aiResponse.message);
+    closeLinkLayout();
   };
 
   const scrollToBottom = () => {
-    chatWindow.current?.scrollBy({top: chatWindow.current.scrollHeight, behavior: 'smooth'});
-  }
+    chatWindow.current?.scrollBy({
+      top: chatWindow.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
 
   const submitQuestion = async (e?: React.FormEvent) => {
     try {
@@ -191,9 +213,241 @@ const Chat = () => {
     }
   };
 
+  const extractYouTubeId = (url: any) => {
+    let id = null;
+    const normalLinkRegex =
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:watch\?v=|embed\/|v\/|.*[?&]v=)([\w-]{11})/;
+    const shortLinkRegex = /(?:https?:\/\/)?youtu\.be\/([\w-]{11})/;
+    const shortsLinkRegex =
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([\w-]{11})/;
+
+    if (normalLinkRegex.test(url)) {
+      id = url.match(normalLinkRegex)?.[1];
+    } else if (shortLinkRegex.test(url)) {
+      id = url.match(shortLinkRegex)?.[1];
+    } else if (shortsLinkRegex.test(url)) {
+      id = url.match(shortsLinkRegex)?.[1];
+    }
+
+    return id;
+  };
+
+  const getVideoData = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+      const videoId = extractYouTubeId(youtubeLink);
+      if (videoId.length == 0) {
+        throw new Error("Enter video link.");
+      }
+
+      if (videoId == null) {
+        throw new Error("Invalid link.");
+      }
+      setFetchingYoutubeData(true);
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${youtubeApiKey}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (response.ok) {
+        let res = await response.json();
+        let body = res.items[0];
+        setvideoData(body);
+        setFetchingYoutubeData(false);
+        fetchTranscript();
+      } else {
+        setIsLoading(false);
+        throw new Error("Error");
+      }
+    } catch (error: any) {
+      toast.error(error);
+    }
+  };
+
+  const decodeYouTubeDuration = (duration: any) => {
+    if (videoData) {
+      const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+      const hours = match[1] ? parseInt(match[1]) : 0;
+      const minutes = match[2] ? parseInt(match[2]) : 0;
+      const seconds = match[3] ? parseInt(match[3]) : 0;
+
+      const formattedHours = hours > 0 ? hours + ":" : "";
+      const formattedMinutes =
+        hours > 0 ? String(minutes).padStart(2, "0") : minutes;
+      const formattedSeconds = String(seconds).padStart(2, "0");
+
+      return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
+    }
+  };
+
+  const analyseVideo = () => {
+    const body = videoData;
+    setIsLinkLayout(false);
+    setIsTyping(true);
+
+    const message_: messageInterface = {
+      video: true,
+      src: (body as any).snippet.thumbnails.high.url,
+      fromUser: true,
+      message: `${(body as any).snippet.localized.title}`
+    };
+
+    setMessages([...messages, message_]);
+
+    generateAIAnswer(
+      [
+        (body as any).snippet.localized.description as string,
+        `you're a student assistant tasked with helping a student understand the concepts from the following video, without them needing to watch it. Based on the video description, pretend like you have acces to the video content and explain each of the key topics in detail, if there is no description use the link: ${youtubeLink}, and here is the title: ${(body as any).snippet.localized.title}, making sure to break down complex ideas in an easy-to-understand manner. The explanation should cover all the major topics and concepts mentioned`,
+      ],
+      message_
+    );
+  };
+
+  const closeLinkLayout = () => {
+    setIsLinkLayout(false);
+    setYoutubeLink('');
+    setvideoData(null);
+  }
+
+  const fetchTranscript = async () => {
+    const videoId = extractYouTubeId(youtubeLink);
+    const captionsResponse = await axios.get(
+      `https://www.googleapis.com/youtube/v3/captions`,
+      {
+        params: {
+          videoId,
+          part: "snippet",
+          key: youtubeApiKey,
+        },
+      }
+    );
+
+    const captions = captionsResponse.data.items;
+
+    if (!captions.length) {
+      throw new Error("No captions available for this video.");
+    }
+
+    const caption = captions.find((cap: any) => cap.snippet.language === "en");
+
+    console.log(caption);
+
+    if (!caption) {
+      toast.error("English captions not found.");
+    }
+
+    const transcriptResponse = await axios.get(
+      `https://www.googleapis.com/youtube/v3/captions/${caption.id}`,
+      {
+        params: {
+          tfmt: "sbv", // Subtitle format (SBV or TTML)
+          key: youtubeApiKey,
+        },
+      }
+    );
+
+    console.log(transcriptResponse.data);
+    setTranscript(transcriptResponse.data);
+  };
+
   return (
     <div className="w-full h-full flex flex-row chat-page">
       {isListening && <Listening></Listening>}
+      {isLoading && <Loading small={false}></Loading>}
+
+      {isLinkLayout && (
+        <div className="fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="w-full mx-2 md:w-1/2 xl:w-1/3 bg-white flex flex-col p-6 gap-y-6 md:mx-auto rounded-3xl">
+          <div className="flex flex-row justify-end">
+            <button className="w-10 h-10 bg-transparent flex items-center justify-center hover:bg-gray-200 rounded-full" onClick={closeLinkLayout}>
+              <CgClose className="text-black text-xl"></CgClose>
+            </button>
+          </div>
+            {videoData && (
+              <div>
+                <div className="w-full flex flex-col md:flex-row">
+                  <img
+                    src={(videoData as any)?.snippet.thumbnails.high.url as any}
+                    alt="youtube thumbnail"
+                    className="w-96 rounded-2xl bg-gray-200 h-40 object-cover"
+                  />
+  
+                  <div className="flex flex-col text-xl ml-3 h-40 items-center justify-center">
+                    Title: {(videoData as any)?.snippet.localized.title}
+                    <br />
+                    Duration:{" "}
+                    {decodeYouTubeDuration(
+                      (videoData as any)?.contentDetails.duration
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {
+              !videoData && (
+                <div className="w-96 rounded-2xl bg-gray-200 h-40 object-cover flex justify-center items-center mx-auto">
+                  {
+                    fetchingYoutubeData ? (
+                      <Loading small></Loading>
+                    ): (
+                      'No data to display.'
+                    )
+                  }
+                </div>
+              )
+            }
+
+            <form
+              className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 mb-5 h-16"
+              style={{ borderRadius: "45px" }}
+              onSubmit={getVideoData}
+            >
+              <input
+                type="text"
+                className="bg-transparent flex flex-grow w-full focus:outline-none px-5 text-xl"
+                placeholder="Enter youtube link"
+                onInput={(e: any) => {
+                  setYoutubeLink(e.target.value);
+                }}
+                value={youtubeLink}
+              />
+
+              {youtubeLink.length > 0 && (
+                <Fade direction="left" duration={260}>
+                  <button
+                    className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
+                      youtubeLink.length == 0 && "opacity-50 cursor-not-allowed"
+                    }`}
+                    style={{ minWidth: "48px" }}
+                    disabled={youtubeLink.length > 0 && false}
+                    type="submit"
+                  >
+                    <PiArrowUpBold className="text-white text-2xl"></PiArrowUpBold>
+                  </button>
+                </Fade>
+              )}
+              {videoData && (
+                <Fade direction="left" duration={260}>
+                  <button
+                    className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center ${
+                      youtubeLink.length == 0 && "opacity-50 cursor-not-allowed"
+                    }`}
+                    style={{ minWidth: "48px" }}
+                    disabled={videoData && false}
+                    type="button"
+                    onClick={analyseVideo}
+                  >
+                    <PiPaperPlane className="text-white text-2xl"></PiPaperPlane>
+                  </button>
+                </Fade>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
 
       {isSpeaking && (
         <div
@@ -315,16 +569,35 @@ const Chat = () => {
           )}
           {
             <button
-              className="absolute bottom-40 right-10 cursor-pointer bg-black h-10 w-10 rounded-full z-50 flex items-center justify-center"
+              className="absolute bottom-40 right-10 cursor-pointer bg-black h-10 w-10 rounded-full z-40 flex items-center justify-center"
               onClick={scrollToBottom}
             >
               <PiArrowDown className="text-white text-2xl"></PiArrowDown>
             </button>
           }
           {messages.length > 0 && (
-            <div className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 mb-24" ref={chatWindow}>
+            <div
+              className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 mb-24"
+              ref={chatWindow}
+            >
               {messages.map((message: messageInterface) => {
-                return (
+                return message.video ? (
+                  <div className="flex flex-row justify-end">
+                    <div
+                      className={`rounded-2xl bg-black text-white w-fit`}
+                      style={{ maxWidth: "384px" }}
+                    >
+                      <img
+                        src={message.src}
+                        alt="youtube image"
+                        className="w-96 rounded-2xl bg-gray-200 h-48 object-cover"
+                      />
+                      <h3 className="text-white py-4 px-2 break-words">
+                        {message.message}
+                      </h3>
+                    </div>
+                  </div>
+                ) : (
                   <div
                     className={`flex flex-col justify-center ${
                       message.fromUser == true ? "items-end" : "items-start"
@@ -436,6 +709,18 @@ const Chat = () => {
             }}
             value={message}
           />
+
+          <button
+            className={`w-12 h-12 min-w-12 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center`}
+            type="button"
+            style={{ minWidth: "48px" }}
+            disabled={message.length > 0 && false}
+            onClick={() => {
+              setIsLinkLayout(true);
+            }}
+          >
+            <PiLink className="text-black text-2xl"></PiLink>
+          </button>
 
           <button
             className={`w-12 h-12 min-w-12 rounded-full bg-black flex items-center justify-center`}

@@ -68,6 +68,7 @@ const Login = () => {
         }, 200);
       } else {
         setLoading(false);
+        setRequestLoading(false);
         let res = await response.json();
         toast.error(res.error);
       }

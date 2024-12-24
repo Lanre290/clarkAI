@@ -248,3 +248,27 @@ body .chat-page{
     padding: 10px;
   }
 }
+
+.home-bg{
+  background: url('assets/images/bg.jpg');
+}
+
+.home-rounded-div{
+  border-radius: 40px;
+}
+
+.rocket-img{
+  animation: float 1.8s infinite;
+}
+
+@keyframes float{
+  0%{
+    transform: translateY(0);
+  }
+  50%{
+    transform: translateY(50px);
+  }
+  100%{
+    transform: translateY(0);
+  }
+}

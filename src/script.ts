@@ -43,32 +43,39 @@ export class SpeechSynthesisService implements SpeechSynthesisControls {
   public utterance: SpeechSynthesisUtterance;
 
   constructor(text: string) {
+    console.log(text)
     if (!('speechSynthesis' in window)) {
       toast.error('Speech synthesis not supported in this browser.');
       throw new Error('Speech synthesis not supported');
     }
 
-
-    this.utterance = new SpeechSynthesisUtterance(text);
+    this.utterance = new SpeechSynthesisUtterance(text.replace(/[\*`]/g, ''));
     this.utterance.pitch = 1.1;
-    this.utterance.rate = 0.9; 
-
-    
+    this.utterance.rate = 0.9;
   }
 
   speak = () => {
-    speechSynthesis.speak(this.utterance);
-    if(!speechSynthesis.speaking){
-      speechSynthesis.speak(this.utterance);
+    if (!this.utterance.text.trim()) {
+      return;
     }
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    } 
+    speechSynthesis.speak(this.utterance);
   };
 
   pause = () => {
-    speechSynthesis.pause();
+    if (speechSynthesis.speaking) {
+      speechSynthesis.pause();
+    }
   };
 
   play = () => {
-    speechSynthesis.resume();
+    if (speechSynthesis.paused) {
+      speechSynthesis.resume();
+    } else if (!speechSynthesis.speaking) {
+      speechSynthesis.speak(this.utterance);
+    }
   };
 
   stop = () => {
@@ -81,25 +88,17 @@ export class SpeechSynthesisService implements SpeechSynthesisControls {
 
   isSpeaking = () => {
     return speechSynthesis.speaking;
-  }
+  };
 
   setVoice = (voiceName: string) => {
     const voices = this.getVoices();
     const selectedVoice = voices.find((voice) => voice.name === voiceName);
     if (selectedVoice) {
       speechSynthesis.cancel();
-  
       this.utterance.voice = selectedVoice;
       speechSynthesis.speak(this.utterance);
     } else {
       toast.error(`Voice "${voiceName}" not found.`);
     }
   };
-  
 }
-
-
-let test = new SpeechSynthesisService('');
-test.speak();
-test.speak();
-test.speak();
