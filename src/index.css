@@ -37,7 +37,9 @@ body .chat-page{
 .message-cont a{
   color: rgb(0, 110, 184);
 }
-
+.message-cont a:hover{
+  text-decoration: underline;
+}
 .operation-tile .arrow {
   position: absolute;
   top: 25px;
