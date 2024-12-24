@@ -578,7 +578,7 @@ const Chat = () => {
           }
           {messages.length > 0 && (
             <div
-              className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 mb-20"
+              className="h-full w-full pt-7 gap-y-2 flex flex-col overflow-y-auto px-5 mb-20 md:mb-44"
               ref={chatWindow}
             >
               {messages.map((message: messageInterface) => {
