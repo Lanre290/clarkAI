@@ -388,7 +388,7 @@ const Chat = () => {
 
             {
               !videoData && (
-                <div className="w-96 rounded-2xl bg-gray-200 h-40 object-cover flex justify-center items-center mx-auto">
+                <div className="w-11/12 md:w-96 rounded-2xl bg-gray-200 h-40 object-cover flex justify-center items-center mx-auto">
                   {
                     fetchingYoutubeData ? (
                       <Loading small></Loading>
