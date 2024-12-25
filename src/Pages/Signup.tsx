@@ -197,7 +197,7 @@ const Signup = () => {
       {otpScreen && (
         <div
           className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-40 flex justify-center items-center px-3 "
-          style={{ backdropFilter: "blur(2px)" }}
+          style={{ backdropFilter: "blur(2px)", zIndex: 99999999 }}
         >
           <form
             className="fixed flex flex-col md:rounded-3xl shadow-2xl md:py-9 px-16 gap-y-5 bg-white w-full h-full md:h-auto md:w-max items-center justify-center"
@@ -227,13 +227,13 @@ const Signup = () => {
 
             <input
               type="text"
-              className="text-3xl text-black mx-5 placeholder-black py-3 md:py-9 px-4 font-light border border-black rounded-xl text-center"
+              className="w-3/4 md:w-auto text-3xl text-black mx-5 placeholder-gray-600 py-3 md:py-9 px-4 font-light bg-gray-200 rounded-xl text-center"
               placeholder="Enter OTP..."
               id=""
               maxLength={4}
               value={otp}
               onInput={(e: any) => {
-                setOTP(e.target.value);
+                setOTP(e.target.value)
               }}
               required
             />
