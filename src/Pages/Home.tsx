@@ -10,8 +10,6 @@ import ReactMarkdown from "react-markdown";
 import { Tilt } from "react-tilt";
 import Sidebar from "../components/Sidebar";
 import Loading from "../components/Loading";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
 import userAnimationData from './../assets/animations/userAnimation.json';
 import Lottie from "react-lottie";
 import { Fade } from "react-awesome-reveal";
@@ -29,10 +27,6 @@ const loadingUserOption = {
   
 
 const Home = () => {
-    const {user} = useUser();
-    const navigate = useNavigate()
-
-
   const query = `Generate a unique, non-repeating educational fact from a random subject like space, biology, physics, chemistry, math, art, philosophy, literature, history, general studies, or others. Each fact should introduce fresh knowledge or context, be accurate, and not exceed 50 words. Rotate subjects frequently to ensure diversity.enerate a random educational fact ranging from philosophy to physics, math, english, general studies, history and many more for a student, providing new knowledge or context. It must be accurate and must be a different one everytime. not more than only 50 words.`;
   const [randomFact, setRandomFact] = useState("");
   const [streakDays, setStreakDays] = useState(0);
@@ -48,7 +42,7 @@ const Home = () => {
 
   const loadRandomFact = async () => {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result_ = await model.generateContent(query); // TO-DO: add safety setting
+    const result_ = await model.generateContent(query);
     const response = await result_.response;
     const aiText = await response.text();
     aiText.substring(7, aiText.length - 3);

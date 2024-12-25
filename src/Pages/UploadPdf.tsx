@@ -381,9 +381,9 @@ const UploadPdf = () => {
         >
           <div className="flex flex-col md:flex-row items-center justify-start w-full mt-7 md:ml-10 gap-x-3 gap-y-2">
             <div className="flex flex-row items-center justify-start w-full md:w-min">
-              <Link to={"/home"} className="p-4 cursor-pointer">
+              <a href={"/home"} className="p-4 cursor-pointer">
                 <BsHouse className="text-black text-5xl"></BsHouse>
-              </Link>
+              </a>
               <button className="bg-black text-white rounded-3xl cursor-pointer w-64 h-12 md:h-auto flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl relative">
                 <PiUpload className="text-2xl"></PiUpload>
                 upload PDF

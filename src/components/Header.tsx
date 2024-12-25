@@ -37,42 +37,53 @@ const Header = () => {
 
   useEffect(() => {
     const addGoogleTranslateScript = () => {
-      const script = document.createElement("script");
+      try {
+        const script = document.createElement("script");
       script.src = 
         "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
       script.async = true;
       document.body.appendChild(script);
+      } catch (error) {
+        
+      }
     };
 
     const initGoogleTranslate = () => {
-      window.googleTranslateElementInit = () => {
-        if (translateRef.current) {
-          new window.google.translate.TranslateElement(
-            {
-              includedLanguages: languages.map((lang) => lang.code).join(","),
-              autoDisplay: false,
-            },
-            translateRef.current
-          );
-
-          
-          setHeaderTopMargin('-40px');
-
-          // Listen for language change event
-          const translateElement = document.querySelector(".goog-te-combo");
-          if (translateElement) {
-            translateElement.addEventListener("change", () => {
-              setTimeout(() => {
-                location.reload();
-              }, 500); // Reload the page on language change
-            });
+      try {
+        (window as any).googleTranslateElementInit = () => {
+          if (translateRef.current) {
+            new (window as any).google.translate.TranslateElement(
+              {
+                includedLanguages: languages.map((lang) => lang.code).join(","),
+                autoDisplay: false,
+              },
+              translateRef.current
+            );
+  
+            
+            setHeaderTopMargin('-40px');
+  
+            // Listen for language change event
+            const translateElement = document.querySelector(".goog-te-combo");
+            if (translateElement) {
+              translateElement.addEventListener("change", () => {
+                setTimeout(() => {
+                  location.reload();
+                }, 500); // Reload the page on language change
+              });
+            }
           }
-        }
-      };
+        };
+      } catch (error) {
+        
+      }
     };
 
-    addGoogleTranslateScript();
-    initGoogleTranslate();
+    
+      setTimeout(() => {
+        addGoogleTranslateScript();
+        initGoogleTranslate();
+      }, 1000);
   }, []);
 
   return (
@@ -83,7 +94,7 @@ const Header = () => {
       <div className="flex flex-row items-center justify-center">
         <div className="text-black font-light text-2xl items-center justify-center m-4 flex flex-row">
           <PiRobotThin className="text-5xl"></PiRobotThin>
-          <h3 className="font-light text-black text-5xl logo-text">Clark</h3>
+          <h3 className="hidden md:flex font-light text-black text-5xl logo-text">Clark</h3>
         </div>
       </div>
 

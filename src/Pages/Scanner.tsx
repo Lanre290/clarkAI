@@ -105,9 +105,9 @@ const Scanner = () => {
         </div>
       )}
 
-      <Link to={"/home"} className="p-4 cursor-pointer flex w-16">
+      <a href={"/home"} className="p-4 cursor-pointer flex w-16">
         <BsHouse className="text-black text-7xl"></BsHouse>
-      </Link>
+      </a>
 
       <div className="flex flex-col w-full h-screen overflow-hidden justify-center items-center">
         <div className="w-11/12 md:w-96 h-96 rounded-3xl border border-black p-16 -mt-16">

@@ -510,12 +510,12 @@ const Chat = () => {
       )}
       <div className="hidden md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100">
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
-          <Link to={"/home"}>
+          <a href={"/home"}>
             <BsHouse
               className="text-black cursor-pointer text-4xl"
               title="Home"
             ></BsHouse>
-          </Link>
+          </a>
 
           <div
             className="flex flex-row"
@@ -549,11 +549,11 @@ const Chat = () => {
 
       <div className="flex flex-col w-full h-screen md:w-11/12 lg:w-4/6 xl:w-3/6 mx-auto justify-center items-center relative pt-16">
         <div className="flex flex-row items-center justify-between md:justify-end w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
-          <Link to={"/home"} className="md:hidden">
+          <a href={"/home"} className="md:hidden">
             <button className="cursor-pointer" title="My profile">
               <BsHouse className="text-black text-5xl font-light"></BsHouse>
             </button>
-          </Link>
+          </a>
 
           <Link to={"/profile"}>
             <button className="cursor-pointer" title="My profile">

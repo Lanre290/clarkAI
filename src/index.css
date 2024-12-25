@@ -76,6 +76,11 @@ body .chat-page{
   min-height: 100vh;
 }
 
+
+.VIpgJd-yAWNEb-L7lbkb {
+  display: none;
+}
+
 .typing-dot {
   bottom: 10px;
   transform: translateY(0%);
@@ -253,6 +258,8 @@ table{
   padding-right: 1.5rem;
   border-radius: 12px;
   border: 1px solid black;
+  width: 150px;
+  margin-top: 50px;
 }
 
 iframe{
