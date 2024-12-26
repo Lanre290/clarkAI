@@ -18,6 +18,10 @@ body .chat-page{
   overflow-y: hidden;
 }
 
+body{
+  min-height: auto !important;
+}
+
 .logo-text {
   font-family: cursive;
 }

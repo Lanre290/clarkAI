@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Sidebar = () => {
     return (
-        <div className="flex flex-col fixed mt-36 md:mt-0 bottom-0 h-auto p-4 rounded-tr-3xl rounded-br-3xl shadow-2xl bg-white z-50">
+        <div className="flex flex-col fixed mt-36 md:mt-0 bottom-0 md:bottom-auto md:top-96 h-auto p-4 rounded-tr-3xl rounded-br-3xl shadow-2xl bg-white z-50">
             <Link to={'/home'} className="p-4 cursor-pointer">
                 <PiHouseSimpleThin className="text-black text-5xl"></PiHouseSimpleThin>
             </Link>

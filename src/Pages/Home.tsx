@@ -100,7 +100,7 @@ const Home = () => {
           </Fade>
         </div>
       )}
-      <div className="w-full h-full lg:w-5/6 mx-auto mt-10 overflow-y-auto">
+      <div className="w-full h-full lg:w-5/6 mx-auto mt-10 overflow-y-auto pt-14">
         <h3 className="text-black text-3xl md:text-6xl ml-5 my-7">Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name} !</h3>
         <div className="flex flex-col md:flex-row justify-center items-start md:justify-evenly md:items-end">
           <div className="flex flex-col w-full mx-auto md:mx-0 md:w-96 rounded-br-2xl rounded-bl-2xl relative p-2">

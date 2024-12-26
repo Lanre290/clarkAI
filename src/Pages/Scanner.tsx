@@ -92,7 +92,7 @@ const Scanner = () => {
   };
 
   return (
-    <div className="overflow-y-hidden">
+    <div className="overflow-y-hidden pt-20">
       <Header />
       {isLoading && (
         <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col z-50">
@@ -105,8 +105,9 @@ const Scanner = () => {
         </div>
       )}
 
-      <a href={"/home"} className="p-4 cursor-pointer flex w-16">
-        <BsHouse className="text-black text-7xl"></BsHouse>
+     
+      <a href={"/home"} className="cursor-pointer w-24 flex m-5">
+        <BsHouse className="text-black text-5xl"></BsHouse>
       </a>
 
       <div className="flex flex-col w-full h-screen overflow-hidden justify-center items-center">
