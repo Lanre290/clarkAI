@@ -376,7 +376,7 @@ const UploadPdf = () => {
 
       <div className="w-full h-full flex md:flex-row">
         <div
-          className="md:w-2/3 lg:w-4/6 w-full h-full overflow-y-auto"
+          className="md:w-2/3 lg:w-4/6 w-full h-full overflow-y-auto pt-7"
           style={{ height: screen.width > 768 ? divHeight : "100vh" }}
         >
           <div className="flex flex-col md:flex-row items-center justify-start w-full mt-7 md:ml-10 gap-x-3 gap-y-2">

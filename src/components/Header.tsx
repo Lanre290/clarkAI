@@ -8,8 +8,9 @@ const Header = () => {
   const [isPremium, setIsPremium] = useState(true);
   const translateRef = useRef<HTMLDivElement>(null);
   const [isAppLoaded, setIsAppLoaded] = useState(false);
-  const [headerTopMargin, setHeaderTopMargin] = useState('0px');
-  
+  const [headerTopMargin, setHeaderTopMargin] = useState("0px");
+  const headerElement = useRef(null);
+
   const languages = [
     { code: "en", name: "English" },
     { code: "es", name: "Spanish" },
@@ -29,8 +30,8 @@ const Header = () => {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") as string);
     setIsPremium(
-      (user as any)?.is_premium ?? 
-        (storedUser ? storedUser?.user?.is_premium : false) ?? 
+      (user as any)?.is_premium ??
+        (storedUser ? storedUser?.user?.is_premium : false) ??
         false
     );
   }, [user]);
@@ -39,13 +40,11 @@ const Header = () => {
     const addGoogleTranslateScript = () => {
       try {
         const script = document.createElement("script");
-      script.src = 
-        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.async = true;
-      document.body.appendChild(script);
-      } catch (error) {
-        
-      }
+        script.src =
+          "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        script.async = true;
+        document.body.appendChild(script);
+      } catch (error) {}
     };
 
     const initGoogleTranslate = () => {
@@ -59,10 +58,27 @@ const Header = () => {
               },
               translateRef.current
             );
-  
-            
-            setHeaderTopMargin('-40px');
-  
+
+            let elementArray: Element[] = [];
+            const selectDropdownContainer = (
+              translateRef.current as HTMLElement
+            ).firstElementChild;
+
+            if (selectDropdownContainer) {
+              Array.from(selectDropdownContainer.children).forEach((child) => {
+                elementArray.push(child);
+              });
+              console.log('text: ', selectDropdownContainer.textContent)
+              selectDropdownContainer.textContent = '';
+              console.log('dropdown: ', selectDropdownContainer)
+              elementArray.forEach((child) => {
+                selectDropdownContainer.appendChild(child);
+              });
+            }
+
+            console.log(selectDropdownContainer);
+            console.log(translateRef.current);
+
             // Listen for language change event
             const translateElement = document.querySelector(".goog-te-combo");
             if (translateElement) {
@@ -74,28 +90,28 @@ const Header = () => {
             }
           }
         };
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     };
 
-    
-      setTimeout(() => {
-        addGoogleTranslateScript();
-        initGoogleTranslate();
-      }, 1000);
+    setTimeout(() => {
+      addGoogleTranslateScript();
+      initGoogleTranslate();
+    }, 1000);
   }, []);
 
   return (
     <div
-      className="w-full h-full flex flex-row justify-between shadow-xl"
-      style={{ zIndex: 100, marginTop: headerTopMargin }}
+      className="w-full h-20 flex flex-row justify-between shadow-xl fixed top-0 left-0 right-0 bg-white z-50"
+      ref={headerElement}
+      style={{ marginTop: headerTopMargin }}
     >
       <div className="flex flex-row items-center justify-center">
-        <div className="text-black font-light text-2xl items-center justify-center m-4 flex flex-row">
+        <Link to={'/home'} className="text-black font-light text-2xl items-center justify-center m-4 flex flex-row">
           <PiRobotThin className="text-5xl"></PiRobotThin>
-          <h3 className="hidden md:flex font-light text-black text-5xl logo-text">Clark</h3>
-        </div>
+          <h3 className="hidden md:flex font-light text-black text-5xl logo-text">
+            Clark
+          </h3>
+        </Link>
       </div>
 
       <div className="flex flex-row justify-center items-center mr-2 md:mr-16 gap-x-3">
