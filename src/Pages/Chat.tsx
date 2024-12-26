@@ -508,7 +508,8 @@ const Chat = () => {
           </select>
         </div>
       )}
-      <div className="hidden md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100">
+
+      <div className="hidden flex-col h-screen w-72 overflow-y-auto bg-gray-100">
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
           <a href={"/home"}>
             <BsHouse
@@ -548,8 +549,8 @@ const Chat = () => {
 
 
       <div className="flex flex-col w-full h-screen md:w-11/12 lg:w-4/6 xl:w-3/6 mx-auto justify-center items-center relative pt-16">
-        <div className="flex flex-row items-center justify-between md:justify-end w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
-          <a href={"/home"} className="md:hidden">
+        <div className="flex flex-row items-center justify-between w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
+          <a href={"/home"} className="">
             <button className="cursor-pointer" title="My profile">
               <BsHouse className="text-black text-5xl font-light"></BsHouse>
             </button>
