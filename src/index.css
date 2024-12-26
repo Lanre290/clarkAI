@@ -16,6 +16,7 @@ pre, a,code {
 
 body .chat-page{
   overflow-y: hidden;
+  scrollbar-width: smooth;
 }
 
 body{
@@ -341,4 +342,36 @@ iframe{
   100%{
     transform: translateY(0);
   }
+}
+
+
+.styles_faq-row-wrapper__3vA1D{
+  background: transparent !important;
+}
+
+.styles_row-title-text__1MuhU{
+  color: white !important;
+  font-weight: 400;
+  font-size: 23px;
+  margin-bottom: 16px;
+}
+.styles_faq-row-wrapper__3vA1D h2,
+.styles_row-content-text__2sgAB{
+  color: white !important;
+}
+
+.styles_row-content-text__2sgAB{
+  padding: 15px 0px
+}
+.styles_icon-wrapper__2cftw svg{
+  fill: white !important;
+}
+
+.faq-title{
+  padding-bottom: 30px !important;
+}
+
+.styles_row-content-text__2sgAB {
+  font-size: 22px !important;
+  font-weight: 100;
 }
