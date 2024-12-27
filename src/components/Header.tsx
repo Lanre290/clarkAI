@@ -68,16 +68,11 @@ const Header = () => {
               Array.from(selectDropdownContainer.children).forEach((child) => {
                 elementArray.push(child);
               });
-              console.log('text: ', selectDropdownContainer.textContent)
               selectDropdownContainer.textContent = '';
-              console.log('dropdown: ', selectDropdownContainer)
               elementArray.forEach((child) => {
                 selectDropdownContainer.appendChild(child);
               });
             }
-
-            console.log(selectDropdownContainer);
-            console.log(translateRef.current);
 
             // Listen for language change event
             const translateElement = document.querySelector(".goog-te-combo");

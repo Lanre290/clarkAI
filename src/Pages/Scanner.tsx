@@ -63,7 +63,6 @@ const Scanner = () => {
       setImageData(base64Image);
       await handleRecognize({ inlineData: base64Image });
     } catch (error) {
-      console.error("Error processing the image:", error);
       toast.error(
         "An error occurred while processing the image. Please try again."
       );
@@ -86,7 +85,6 @@ const Scanner = () => {
       setResultText(text);
       setIsSolved(true);
     } catch (error) {
-      console.error("Error during recognition:", error);
       setResultText("Unable to analyze the image. Please try again.");
     }
   };

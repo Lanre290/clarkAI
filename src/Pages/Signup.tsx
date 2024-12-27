@@ -50,7 +50,6 @@ const Signup = () => {
   }, []);
 
   const handleSubmit = async (e?: any) => {
-    console.log(isGoogleSignup);
     if (isGoogleSignup == false) {
       e.preventDefault();
     }

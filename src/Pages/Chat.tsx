@@ -154,7 +154,6 @@ const Chat = () => {
       setMessages([...messages, processedMessage]);
       setMessage("");
 
-      console.log(JSON.stringify(messages));
 
       generateAIAnswer(
         [JSON.stringify(processedMessage), JSON.stringify(messages)],
@@ -260,7 +259,6 @@ const Chat = () => {
       } else {
         setIsLoading(false);
         setFetchingYoutubeData(false);
-        console.log('fwf');
         throw new Error('Invalid video ID.');
       }
     } catch (error: any) {
@@ -335,8 +333,6 @@ const Chat = () => {
 
     const caption = captions.find((cap: any) => cap.snippet.language === "en");
 
-    console.log(caption);
-
     if (!caption) {
       toast.error("English captions not found.");
     }
@@ -351,9 +347,9 @@ const Chat = () => {
       }
     );
 
-    console.log(transcriptResponse.data);
     setTranscript(transcriptResponse.data);
   };
+
 
   return (
     <div className="w-full h-full flex flex-row chat-page">
@@ -569,7 +565,7 @@ const Chat = () => {
         >
           {messages.length == 0 && (
             <h3 className="text-4xl text-black my-10 text-center">
-              Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name},
+              Hello {name && (name.split(" ").length > 1 ? name.split(" ")[1] : name)},
               What can i help you with today?
             </h3>
           )}
@@ -633,6 +629,7 @@ const Chat = () => {
                             if (currentVoice) {
                               speechService?.setVoice(currentVoice);
                             }
+                            speechService?.speak();
                             speechService?.speak();
                             setIsSpeaking(true);
                             e.target.click();

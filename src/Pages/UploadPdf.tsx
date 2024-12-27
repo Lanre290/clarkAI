@@ -150,7 +150,7 @@ const UploadPdf = () => {
 
       handleAI(file);
     } else {
-      console.error("Please upload a valid PDF file");
+      toast.error("Please upload a valid PDF file");
     }
   };
 
