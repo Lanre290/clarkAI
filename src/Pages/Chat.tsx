@@ -29,6 +29,7 @@ import Listening from "../components/Listening";
 import Loading from "../components/Loading";
 import axios from "axios";
 import { CgClose } from "react-icons/cg";
+import { geminiModel } from "../App";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -98,7 +99,7 @@ const Chat = () => {
     userMessage: messageInterface
   ) => {
     setSuggestedQuestion("");
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: geminiModel });
     const result_ = await model.generateContent([
       "You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question accordingly or reply the human accordingly. Respond directly from your perspective, avoiding statements that reference the user's actions or context explicitly (e.g., 'the user did this or that'). you MUST make sure and crosscheck you are answering the last question.",
       ...dependencies,

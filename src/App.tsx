@@ -16,6 +16,8 @@ import Scanner from "./Pages/Scanner";
 import UseCheckUserSession from "./Pages/regulateLogin";
 import HomePage from "./Pages/Homepage";
 
+export const geminiModel = import.meta.env.VITE_GEMINI_MODEL;
+
 function App() {
   return (
     <>

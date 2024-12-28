@@ -13,6 +13,7 @@ import Loading from "../components/Loading";
 import userAnimationData from './../assets/animations/userAnimation.json';
 import Lottie from "react-lottie";
 import { Fade } from "react-awesome-reveal";
+import { geminiModel } from "../App";
 
 
 const loadingUserOption = {
@@ -41,7 +42,7 @@ const Home = () => {
   }
 
   const loadRandomFact = async () => {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: geminiModel });
     const result_ = await model.generateContent(query);
     const response = await result_.response;
     const aiText = await response.text();

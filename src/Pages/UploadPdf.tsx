@@ -22,6 +22,7 @@ import { CgClose } from "react-icons/cg";
 import { jsPDF } from "jspdf";
 import { BiCopy, BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
 import Listening from "../components/Listening";
+import { geminiModel } from "../App";
 
 export interface messageInterface {
   src?:string;
@@ -112,7 +113,7 @@ const UploadPdf = () => {
     setIsLoadingPDF(true);
     pdfToText(file)
       .then(async (text) => {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: geminiModel });
         const result_ = await model.generateContent([queryText, text]);
         const response = await result_.response;
         const aiText = await response.text();
@@ -181,7 +182,7 @@ const UploadPdf = () => {
     userMessage: messageInterface
   ) => {
     setSuggestedQuestion("");
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: geminiModel });
     const result_ = await model.generateContent([
       "You are clarkAI, an AI educational assistant. This is the conversation between a person and you as an AI model, go through the conversation and answer the last question from the human accordingly Respond directly from your perspective, avoiding statements that reference the user's actions or context explicitly (e.g., 'the user did this or that'). Feel free to research the internet for more information.",
       ...dependencies,
@@ -224,33 +225,33 @@ const UploadPdf = () => {
 
   const generatePDF = async () => {
     const doc = new jsPDF();
-
-    // Select the HTML element
+  
     const content: HTMLElement =
       pdfHTMLElement.current as unknown as HTMLElement;
-
-    // Get the dimensions of the content
+  
     const contentWidth = content.offsetWidth - 20;
     const contentHeight = content.offsetHeight;
-
-    // Calculate the scaling factor to fit the content to the PDF
+  
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const scale = Math.min(
       pageWidth / contentWidth,
       pageHeight / contentHeight
     );
-
+  
     doc.html(content, {
       callback: () => {
+        // Set font size before saving or adding more text
+        doc.setFontSize(12); // Adjust this size as needed
         doc.save(`${filename}_${pdfMode}.pdf`);
       },
       margin: [10, 10, 10, 10],
       html2canvas: {
-        scale, // Dynamically set scale based on content size
+        scale,
       },
     });
   };
+  
 
   const submitPDFQuestion = async (e?: React.FormEvent) => {
     try {
@@ -474,7 +475,7 @@ const UploadPdf = () => {
             </button>
           </div>
 
-          <div className="p-5" ref={pdfHTMLElement}>
+          <div className="p-5 text-xl" ref={pdfHTMLElement}>
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         </div>
@@ -507,7 +508,7 @@ const UploadPdf = () => {
             >
               {messages.length == 0 && (
                 <h3 className="text-4xl text-black text-center my-auto">
-                  Hello {name.split(" ").length > 1 ? name.split(" ")[1] : name}
+                  Hello {name && (name.split(" ").length > 1 ? name.split(" ")[1] : name)}
                   , Ask me any question about your pdf?
                 </h3>
               )}

@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { toast } from "react-toastify";
+import { geminiModel } from "./App";
 const API_KEY = import.meta.env.VITE_GEMINI_KEY;
 export const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -16,10 +17,10 @@ export const reactTiltOptions = {
 };
 
 export const suggestQuestion = async (dependencies: string[]) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: geminiModel });
   const result_ = await model.generateContent([
     ...dependencies,
-    `You are an AI study buddy. Suggest a very understandable question your student might ask, ranging from conceptual, practical, and scenario-based questions. Do not focus solely on explanations and return only one short sentence and make sure your question differs from the original question.`,
+    `You are an AI study buddy. Suggest a very understandable question your student might ask, ranging from conceptual, practical, and scenario-based questions. Do not focus solely on explanations and return only one short sentence with no preambles and make sure your question differs from the original question.`,
   ]);
 
   const response = await result_.response;

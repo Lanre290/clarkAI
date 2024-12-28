@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { BsHouse } from "react-icons/bs";
 import ReactMarkdown from "react-markdown";
 import { CgClose } from "react-icons/cg";
+import { geminiModel } from "../App";
 
 const Scanner = () => {
   const API_KEY = import.meta.env.VITE_GEMINI_KEY;
@@ -74,7 +75,7 @@ const Scanner = () => {
   // Handle image recognition
   const handleRecognize = async (imageData: any) => {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = genAI.getGenerativeModel({ model: geminiModel });
       const result = await model.generateContent([queryText, imageData]);
 
       if (!result || !result.response) {
