@@ -7,7 +7,6 @@ import HomepageTitle from "../components/HompageTitle";
 import FeatureTile from "../components/FeatureTile";
 import {
   BsJustifyLeft,
-  BsLink,
   BsPencil,
   BsRobot,
   BsTranslate,
