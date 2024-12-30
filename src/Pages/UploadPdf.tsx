@@ -23,6 +23,7 @@ import { jsPDF } from "jspdf";
 import { BiCopy, BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
 import Listening from "../components/Listening";
 import { geminiModel } from "../App";
+import Loading from "../components/Loading";
 
 export interface messageInterface {
   src?: string;
@@ -39,6 +40,27 @@ export const loadingAnimationOption = {
     preserveAspectRatio: "xMidYMid slice",
   },
 };
+
+interface quizQuestion {
+  question: string;
+  options: string[];
+  correct_answer: string;
+  explanation: string;
+}
+
+interface quizResult {
+  correct_questions: number;
+  questions: {
+    question_number: number;
+    question: string;
+    options: string[];
+    chosen_answer: string;
+    correct_answer: string;
+    correct: boolean;
+    explanation: string;
+    correct_questions: number;
+  }[]
+}
 
 const UploadPdf = () => {
   const divHeight = screen.height - 190;
@@ -79,6 +101,13 @@ const UploadPdf = () => {
   const [quizDuration, setQuizDuration] = useState<any>(null);
   const [numberOfQuizQuestions, setNumberOfQuizQuestions] = useState("");
   const [quizUi, setQuizUI] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<quizQuestion[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [generatingQuiz, setGeneratingQuiz] = useState<boolean>(false);
+  const [quizExplanationUI, setQuizExplanationUI] = useState<boolean>(false);
+  const [quizResult, setQuizResult] = useState<quizResult>([] as any);
+  const [pdfContent, setPDFContent] = useState('');
 
   const submitMessageButton = useRef<null | HTMLButtonElement>(null);
   const readButton = useRef<null | HTMLButtonElement>(null);
@@ -124,6 +153,7 @@ const UploadPdf = () => {
         aiText.substring(7, aiText.length - 3);
         setResult(aiText);
         setPDFText(aiText);
+        setPDFContent(text);
         setIsLoadingPDF(false);
       })
       .catch(() => {
@@ -292,10 +322,12 @@ const UploadPdf = () => {
 
   const countdownQuiz = () => {
     setQuizDuration(quizDuration - 1);
+    console.log(quizDuration)
   };
 
   const createQuiz = async () => {
     try {
+      setGeneratingQuiz(true);
       if (!numberOfQuizQuestions) {
         toast.error("Select a valid number of quiz questions.");
         throw new Error("b");
@@ -308,46 +340,94 @@ const UploadPdf = () => {
 
       const model = genAI.getGenerativeModel({ model: geminiModel });
       const result_ = await model.generateContent([
-        pdfText,
-        `generate ${numberOfQuizQuestions} questions from this pdf in the format: "questions": [
+        pdfContent,
+        `
+        You are an AI teacher. Generate exactly ${numberOfQuizQuestions} technical multiple-choice questions from this PDF,
+        Each question must have Four distinct options,
+        One correct answer.
+        A short explanation for the correct answer. Response should be in the format: "questions": [
         {
         "question": "Which data types are supported by Fortran 90?",
         "options": ["Integer", "Real", "Logical", "Character"],
-        "correct_answer": "Integer, Real, Logical, Character"
+        "correct_answer": "Integer, Real, Logical, Character",
+        "explanation": ""
         },
         {
         "question": "Which of the following is a valid data type in Fortran 90?",
         "options": ["Float", "Integer", "String", "Boolean"],
-        "correct_answer": "Integer"
+        "correct_answer": "Integer",
+        "explanation": ""
         },
         {
         "question": "How many data types are mentioned in the Fortran 90 overview?",
         "options": ["Four", "Five", "Six", "Three"],
-        "correct_answer": "Four"
+        "correct_answer": "Four",
+        "explanation": ""
         }
-        ]`,
+        ]
+        Make questions specific, technical, and derived directly from the document.
+        `,
       ]);
 
       const response = await result_.response;
-      const text_ = await response.text();
+      let text_ = await response.text();
+      text_ = text_.slice(7, text_.length - 4);
 
-      const aiText =
-        (text_.startsWith("{") && text_.endsWith("}"))
-          ? text_.slice(7, text_.length - 4) 
-          : `{${text_.slice(7, text_.length - 4)}}`;
+      console.log(text_);
+
+      const aiText = text_.startsWith("{") ? text_ : `{${text_}}`;
 
       console.log(aiText);
-      JSON.parse(aiText);
+      const questions_ = JSON.parse(aiText);
       console.log(JSON.parse(aiText));
+      setQuizQuestions(questions_.questions);
+      console.log(quizQuestions);
       setQuizUI(true);
+      setGeneratingQuiz(false);
 
       setInterval(countdownQuiz, 1000);
     } catch (error: any) {
       if (error.message != "b") {
+        setGeneratingQuiz(false);
         console.error(error);
         toast.error("Error generating quiz. please try again.");
       }
     }
+  };
+
+  const chooseAnswer = (index: number) => {
+    let answers = userAnswers;
+    answers[currentQuestion] = quizQuestions[currentQuestion].options[index];
+  };
+
+  const submitQuiz = () => {
+    let result: any = {};
+    const array: any[] = [];
+    let correctQuestions = 0;
+    quizQuestions.forEach((question, index) => {
+      let object = {
+        question_number: index + 1,
+        question: question.correct_answer,
+        options: question.options,
+        chosen_answer: userAnswers[index],
+        correct_answer: question.correct_answer,
+        correct: question.correct_answer == userAnswers[index],
+        explanation: question.explanation,
+      };
+
+
+      if(object.correct){
+        correctQuestions++
+      }
+      array.push(object);
+    });
+
+    result.questions = array
+    result.correct_questions = correctQuestions;
+
+    console.log(array);
+    setQuizResult(result);
+    setQuizExplanationUI(true);
   };
 
   useLayoutEffect(() => {
@@ -355,6 +435,8 @@ const UploadPdf = () => {
       submitPDFQuestion();
     }, 300);
   }, [speechToTextResponse]);
+
+  const optionLetters = ["A", "B", "C", "D"];
 
   return (
     <>
@@ -439,7 +521,7 @@ const UploadPdf = () => {
           className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col"
           style={{ zIndex: 100 }}
         >
-          <div className="w-full bg-white md:rounded-3xl flex flex-col justify-center items-center p-6 md:w-96 xl:w-96">
+          <div className="w-full h-full md:h-auto bg-white md:rounded-3xl flex flex-col md:justify-center items-center pt-5 md:pt-0 gap-y-10 md:gap-y-0 p-6 md:w-96 xl:w-96">
             {screen.width > 768 ? (
               <div className="flex flex-row justify-end w-11/12">
                 <button
@@ -452,7 +534,7 @@ const UploadPdf = () => {
                 </button>
               </div>
             ) : (
-              <div className="flex">
+              <div className="flex w-full justify-start">
                 <button
                   className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
                   onClick={() => {
@@ -505,10 +587,17 @@ const UploadPdf = () => {
               </div>
 
               <button
-                className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-black text-white rounded-2xl w-11/12 md:w-64 cursor-pointer"
+                className={`flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-black text-white ${
+                  generatingQuiz
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer"
+                } rounded-2xl w-11/12 md:w-64`}
                 onClick={createQuiz}
+                title={
+                  generatingQuiz ? "Creating your quiz" : "Click to proceed."
+                }
               >
-                Proceed
+                {generatingQuiz ? <Loading small></Loading> : "Proceed"}
               </button>
             </div>
           </div>
@@ -520,59 +609,205 @@ const UploadPdf = () => {
           className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-90 flex items-center justify-center flex-col"
           style={{ zIndex: 100, backdropFilter: "blur(3px)" }}
         >
-          <div className="w-full flex flex-col gap-y-5 md:gap-y-10 bg-white md:w-2/3 xl:w-1/2 md:rounded-3xl shadow-2xl justify-center items-center p-6 md:p-10">
-            <h3 className="text-black text-3xl text-start">
+          <div className="w-full h-full md:h-auto flex flex-col gap-y-5 md:gap-y-10 bg-white md:w-2/3 xl:w-1/2 md:rounded-3xl shadow-2xl justify-between md:justify-center items-center p-6 md:p-10">
+            <h3 className="text-black text-3xl text-start mt-12 md:mt-0">
               {Math.floor(quizDuration / 3600)}:{Math.floor(quizDuration / 60)}:
               {quizDuration % 60}
-              {quizDuration}
             </h3>
 
-            <div className="flex flex-col w-full">
-              <h3 className="text-black text-3xl">What is an array?</h3>
+            <div className="flex flex-col w-full md:justify-center flex-grow">
+              <h3 className="text-black text-xl md:text-3xl">
+                {currentQuestion + 1}.&nbsp;
+                {quizQuestions[currentQuestion].question}
+              </h3>
 
               <div className="flex flex-col gap-y-3 mt-7">
                 <div className="flex flex-row gap-x-3">
-                  <input type="radio" name="quiz_options" value={'fhsihjsf'} id="option1" className="w-6 h-6 cursor-pointer" />
-                  <label className="text-2xl" htmlFor="option1">Option 1</label>
+                  <input
+                    type="radio"
+                    name="quiz_options"
+                    value={quizQuestions[currentQuestion].options[0]}
+                    id="option1"
+                    className="w-6 h-6 cursor-pointer"
+                    onInput={() => {
+                      chooseAnswer(0);
+                    }}
+                    checked={
+                      (userAnswers[currentQuestion] &&
+                        userAnswers[currentQuestion] ==
+                          quizQuestions[currentQuestion].options[0]) as boolean
+                    }
+                  />
+                  <label className="text-xl md:text-2xl" htmlFor="option1">
+                    {quizQuestions[currentQuestion].options[0]}
+                  </label>
                 </div>
                 <div className="flex flex-row gap-x-3">
-                  <input type="radio" name="quiz_options" value={'fhsihjsf'} id="option2" className="w-6 h-6 cursor-pointer" />
-                  <label className="text-2xl" htmlFor="option2">Option 2</label>
+                  <input
+                    type="radio"
+                    name="quiz_options"
+                    value={quizQuestions[currentQuestion].options[1]}
+                    id="option2"
+                    className="w-6 h-6 cursor-pointer"
+                    onInput={() => {
+                      chooseAnswer(1);
+                    }}
+                    checked={
+                      (userAnswers[currentQuestion] &&
+                        userAnswers[currentQuestion] ==
+                          quizQuestions[currentQuestion].options[1]) as boolean
+                    }
+                  />
+                  <label className="text-xl md:text-2xl" htmlFor="option2">
+                    {quizQuestions[currentQuestion].options[1]}
+                  </label>
                 </div>
                 <div className="flex flex-row gap-x-3">
-                  <input type="radio" name="quiz_options" value={'fhsihjsf'} id="option3" className="w-6 h-6 cursor-pointer" />
-                  <label className="text-2xl" htmlFor="option3">Option 3</label>
+                  <input
+                    type="radio"
+                    name="quiz_options"
+                    value={quizQuestions[currentQuestion].options[2]}
+                    id="option3"
+                    className="w-6 h-6 cursor-pointer"
+                    onInput={() => {
+                      chooseAnswer(2);
+                    }}
+                    checked={
+                      (userAnswers[currentQuestion] &&
+                        userAnswers[currentQuestion] ==
+                          quizQuestions[currentQuestion].options[2]) as boolean
+                    }
+                  />
+                  <label className="text-xl md:text-2xl" htmlFor="option3">
+                    {quizQuestions[currentQuestion].options[2]}
+                  </label>
                 </div>
                 <div className="flex flex-row gap-x-3">
-                  <input type="radio" name="quiz_options" value={'fhsihjsf'} id="option4" className="w-6 h-6 cursor-pointer" />
-                  <label className="text-2xl" htmlFor="option4">Option 4</label>
+                  <input
+                    type="radio"
+                    name="quiz_options"
+                    value={quizQuestions[currentQuestion].options[3]}
+                    id="option4"
+                    className="w-6 h-6 cursor-pointer"
+                    onInput={() => {
+                      chooseAnswer(3);
+                    }}
+                    checked={
+                      (userAnswers[currentQuestion] &&
+                        userAnswers[currentQuestion] ==
+                          quizQuestions[currentQuestion].options[3]) as boolean
+                    }
+                  />
+                  <label className="text-xl md:text-2xl" htmlFor="option4">
+                    {quizQuestions[currentQuestion].options[3]}
+                  </label>
                 </div>
               </div>
+            </div>
 
+            <div className="flex flex-col w-full">
               <div className="flex flex-col w-full">
                 <div className="flex flex-col md:flex-row md:justify-between mt-10">
                   <button
-                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
-                >
-                  Previous Question
-                </button>
+                    className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
+                    onClick={() => {
+                      if (currentQuestion != 0) {
+                        setCurrentQuestion(currentQuestion - 1);
+                      }
+                    }}
+                  >
+                    Previous Question
+                  </button>
 
-                <button
-                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
-                >
-                  Next Question
-                </button>
+                  <button
+                    className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
+                    onClick={() => {
+                      if (currentQuestion != quizQuestions.length - 1) {
+                        setCurrentQuestion(currentQuestion + 1);
+                      }
+                    }}
+                  >
+                    Next Question
+                  </button>
                 </div>
               </div>
 
               <div className="flex flex-row md:justify-end mt-10">
-              <button
+                <button
                   className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-black text-white rounded-2xl w-11/12 md:w-64 cursor-pointer"
+                  onClick={submitQuiz}
                 >
                   Submit Quiz
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
 
+      {quizExplanationUI && (
+        <div
+          className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col"
+          style={{ zIndex: 100 }}
+        >
+          <div className="w-full h-full md:h-auto bg-white md:rounded-3xl flex flex-col items-center pt-5 md:pt-0 gap-y-10 md:gap-y-0 p-6 xl:w-2/3 overflow-y-auto">
+            <div className="w-full flex flex-col justify-start items-center gap-y-10 mt-10">
+              <h3 className="text-black text-2xl md:text-4xl text-start w-full">
+                Correct questions: {quizResult.correct_questions}/{(quizResult as any).questions.length}
+              </h3>
+              <div className="w-full flex flex-col gap-y-6 items-center justify-center">
+                {quizResult.questions.map((question) => {
+                  return (
+                    <div className="w-full flex flex-col overflow-y-auto">
+                      <h3 className="text-black text-xl md:text-3xl">
+                        {question.question_number}.&nbsp;
+                        {quizQuestions[currentQuestion].question}
+                      </h3>
+
+                      {question.options.map((option, index) => {
+                        return (
+                          <h3 className="text-black text-xl md:text-3xl">
+                            {optionLetters[index]}.&nbsp;{option}
+                          </h3>
+                        );
+                      })}
+
+                      <div
+                        className={`mt-5 w-36 text-center py-3 px-7 ${
+                          question.correct
+                            ? "bg-green-200 text-green-600"
+                            : "bg-red-200 text-red-600"
+                        }`}
+                      >
+                        {question.correct ? "CORRECT." : "FAILED."}
+                      </div>
+                      <h3 className="text-black w-full text-start">
+                        Correct Answer: {question.correct_answer}
+                      </h3>
+                      <h3 className="text-black w-full text-start">
+                        You chose: {question.chosen_answer}
+                      </h3>
+                      <h3 className="text-black w-full text-start mt-5 break-words overflow-hidden">
+                        Explanation: {question.explanation}
+                      </h3>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <button
+                className={`flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-black text-white cursor-pointer rounded-2xl w-11/12 md:w-64`}
+                onClick={() => {
+                  setQuizExplanationUI(false);
+                  setQuizUI(false);
+                  setQuizSettingUI(false);
+                  setUserAnswers([]);
+                  setQuizQuestions([]);
+                  setCurrentQuestion(0);
+                }}
+              >
+                Back
+              </button>
             </div>
           </div>
         </div>
@@ -580,7 +815,7 @@ const UploadPdf = () => {
 
       <div className="w-full h-full md:mt-20 flex md:flex-row">
         <div
-          className="md:w-2/3 lg:w-4/6 w-full h-full overflow-y-auto pt-7"
+          className="md:w-2/3 lg:w-4/6 w-full h-full overflow-y-auto pt-14 md:pt-7"
           style={{ height: screen.width > 768 ? divHeight : "100vh" }}
         >
           <div className="flex flex-col md:flex-row items-center justify-start w-full mt-7 md:ml-10 gap-x-3 gap-y-2">
@@ -611,7 +846,7 @@ const UploadPdf = () => {
               )}
             </div>
 
-            <h3 className="text-black text-3xl h-full flex items-center justify-start w-1/2 truncate">
+            <h3 className="text-black text-3xl h-full flex items-center justify-start md:w-1/2 truncate w-full text-start px-3">
               {filename}
             </h3>
           </div>
