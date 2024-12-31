@@ -369,16 +369,10 @@ const UploadPdf = () => {
       const response = await result_.response;
       let text_ = await response.text();
       text_ = text_.slice(7, text_.length - 4).trim();
-
-      console.log(text_);
-      console.log('start: ', text_[0]);
       const aiText = text_.startsWith("{") ? text_ : `{${text_}}`;
 
-      console.log(aiText);
       const questions_ = JSON.parse(aiText);
-      console.log(JSON.parse(aiText));
       setQuizQuestions(questions_.questions);
-      console.log(quizQuestions);
       setQuizUI(true);
       setGeneratingQuiz(false);
 
@@ -406,10 +400,11 @@ const UploadPdf = () => {
     let answers = userAnswers;
     answers[currentQuestion] = quizQuestions[currentQuestion].options[index];
 
-    console.log('reflected.');
   };
 
   const submitQuiz = () => {
+    time = 0;
+    setQuizDuration(null);
     let result: any = {};
     const array: any[] = [];
     let correctQuestions = 0;
@@ -434,7 +429,6 @@ const UploadPdf = () => {
     result.questions = array
     result.correct_questions = correctQuestions;
 
-    console.log(array);
     setQuizResult(result);
     setQuizExplanationUI(true);
   };
