@@ -116,6 +116,7 @@ const UploadPdf = () => {
     (window as any).webkitSpeechRecognition)();
 
   const { user, setUser } = useUser();
+  let time:any;
 
   useEffect(() => {
     const service = new SpeechSynthesisService(speechText);
@@ -320,10 +321,6 @@ const UploadPdf = () => {
     }
   };
 
-  const countdownQuiz = () => {
-    setQuizDuration(quizDuration - 1);
-    console.log(quizDuration)
-  };
 
   const createQuiz = async () => {
     try {
@@ -371,10 +368,10 @@ const UploadPdf = () => {
 
       const response = await result_.response;
       let text_ = await response.text();
-      text_ = text_.slice(7, text_.length - 4);
+      text_ = text_.slice(7, text_.length - 4).trim();
 
       console.log(text_);
-
+      console.log('start: ', text_[0]);
       const aiText = text_.startsWith("{") ? text_ : `{${text_}}`;
 
       console.log(aiText);
@@ -385,7 +382,14 @@ const UploadPdf = () => {
       setQuizUI(true);
       setGeneratingQuiz(false);
 
-      setInterval(countdownQuiz, 1000);
+      let time = parseInt(quizDuration);
+
+      setInterval(() => {
+        time = time - 1;
+        setQuizDuration(time);
+        setQuizDuration(time);
+      }, 1000);
+
     } catch (error: any) {
       if (error.message != "b") {
         setGeneratingQuiz(false);
@@ -398,6 +402,8 @@ const UploadPdf = () => {
   const chooseAnswer = (index: number) => {
     let answers = userAnswers;
     answers[currentQuestion] = quizQuestions[currentQuestion].options[index];
+
+    console.log('reflected.');
   };
 
   const submitQuiz = () => {
@@ -435,6 +441,11 @@ const UploadPdf = () => {
       submitPDFQuestion();
     }, 300);
   }, [speechToTextResponse]);
+
+  useEffect(() => {
+    time = quizDuration;
+
+  }, [quizDuration]);
 
   const optionLetters = ["A", "B", "C", "D"];
 
@@ -523,7 +534,7 @@ const UploadPdf = () => {
         >
           <div className="w-full h-full md:h-auto bg-white md:rounded-3xl flex flex-col md:justify-center items-center pt-5 md:pt-0 gap-y-10 md:gap-y-0 p-6 md:w-96 xl:w-96">
             {screen.width > 768 ? (
-              <div className="flex flex-row justify-end w-11/12">
+              <div className="flex flex-row justify-end w-11/12 mt-5">
                 <button
                   className="w-14 h-14 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100"
                   onClick={() => {
@@ -534,7 +545,7 @@ const UploadPdf = () => {
                 </button>
               </div>
             ) : (
-              <div className="flex w-full justify-start">
+              <div className="flex w-full justify-start mt-5">
                 <button
                   className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
                   onClick={() => {
@@ -611,8 +622,8 @@ const UploadPdf = () => {
         >
           <div className="w-full h-full md:h-auto flex flex-col gap-y-5 md:gap-y-10 bg-white md:w-2/3 xl:w-1/2 md:rounded-3xl shadow-2xl justify-between md:justify-center items-center p-6 md:p-10">
             <h3 className="text-black text-3xl text-start mt-12 md:mt-0">
-              {Math.floor(quizDuration / 3600)}:{Math.floor(quizDuration / 60)}:
-              {quizDuration % 60}
+              {Math.floor(quizDuration / 3600)}:{Math.floor(quizDuration / 60) < 10 ? '0' : ''}{Math.floor(quizDuration / 60)}:
+              {quizDuration % 60 < 10 ? '0' : ''}{quizDuration % 60}
             </h3>
 
             <div className="flex flex-col w-full md:justify-center flex-grow">
@@ -629,11 +640,12 @@ const UploadPdf = () => {
                     value={quizQuestions[currentQuestion].options[0]}
                     id="option1"
                     className="w-6 h-6 cursor-pointer"
-                    onInput={() => {
+                    onClick={(e: any) => {
+                      e.target.checked = true;
                       chooseAnswer(0);
                     }}
                     checked={
-                      (userAnswers[currentQuestion] &&
+                      (userAnswers[currentQuestion] !== undefined &&
                         userAnswers[currentQuestion] ==
                           quizQuestions[currentQuestion].options[0]) as boolean
                     }
@@ -649,11 +661,12 @@ const UploadPdf = () => {
                     value={quizQuestions[currentQuestion].options[1]}
                     id="option2"
                     className="w-6 h-6 cursor-pointer"
-                    onInput={() => {
+                    onClick={(e: any) => {
+                      e.target.checked = true;
                       chooseAnswer(1);
                     }}
                     checked={
-                      (userAnswers[currentQuestion] &&
+                      (userAnswers[currentQuestion] !== undefined &&
                         userAnswers[currentQuestion] ==
                           quizQuestions[currentQuestion].options[1]) as boolean
                     }
@@ -669,11 +682,12 @@ const UploadPdf = () => {
                     value={quizQuestions[currentQuestion].options[2]}
                     id="option3"
                     className="w-6 h-6 cursor-pointer"
-                    onInput={() => {
+                    onClick={(e: any) => {
+                      e.target.checked = true;
                       chooseAnswer(2);
                     }}
                     checked={
-                      (userAnswers[currentQuestion] &&
+                      (userAnswers[currentQuestion] !== undefined &&
                         userAnswers[currentQuestion] ==
                           quizQuestions[currentQuestion].options[2]) as boolean
                     }
@@ -689,11 +703,12 @@ const UploadPdf = () => {
                     value={quizQuestions[currentQuestion].options[3]}
                     id="option4"
                     className="w-6 h-6 cursor-pointer"
-                    onInput={() => {
+                    onClick={(e: any) => {
+                      e.target.checked = true;
                       chooseAnswer(3);
                     }}
                     checked={
-                      (userAnswers[currentQuestion] &&
+                      (userAnswers[currentQuestion] !== undefined &&
                         userAnswers[currentQuestion] ==
                           quizQuestions[currentQuestion].options[3]) as boolean
                     }
@@ -707,6 +722,17 @@ const UploadPdf = () => {
 
             <div className="flex flex-col w-full">
               <div className="flex flex-col w-full">
+                <div className="flex flex-row flex-wrap gap-2">
+                  {
+                    quizQuestions.map((question, index) => {
+                      return(
+                        <div className={`w-10 h-10 flex items-center justify-center border ${currentQuestion == index ? 'text-white bg-black' : 'text-black hover:bg-gray-100 hover:text-black'} ${userAnswers[index] !== undefined && 'bg-green-600 border-green-600 text-white'} border-black cursor-pointer`} onClick={() => {setCurrentQuestion(index)}}>
+                          {index+1}
+                        </div>
+                      )
+                    })
+                  }
+                </div>
                 <div className="flex flex-col md:flex-row md:justify-between mt-10">
                   <button
                     className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
@@ -928,7 +954,7 @@ const UploadPdf = () => {
             </button>
           </div>
 
-          <div className="p-5 text-xl" ref={pdfHTMLElement}>
+          <div className="p-5 text-xl pb-28" ref={pdfHTMLElement}>
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         </div>
