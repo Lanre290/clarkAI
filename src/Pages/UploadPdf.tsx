@@ -388,6 +388,9 @@ const UploadPdf = () => {
         time = time - 1;
         setQuizDuration(time);
         setQuizDuration(time);
+        if(time == 0){
+          submitQuiz();
+        }
       }, 1000);
 
     } catch (error: any) {
@@ -413,7 +416,7 @@ const UploadPdf = () => {
     quizQuestions.forEach((question, index) => {
       let object = {
         question_number: index + 1,
-        question: question.correct_answer,
+        question: question.question,
         options: question.options,
         chosen_answer: userAnswers[index],
         correct_answer: question.correct_answer,
