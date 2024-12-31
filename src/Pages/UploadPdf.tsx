@@ -116,7 +116,7 @@ const UploadPdf = () => {
     (window as any).webkitSpeechRecognition)();
 
   const { user, setUser } = useUser();
-  let time:any;
+  let quizTimer: any;
 
   useEffect(() => {
     const service = new SpeechSynthesisService(speechText);
@@ -378,7 +378,7 @@ const UploadPdf = () => {
 
       let time = parseInt(quizDuration);
 
-      setInterval(() => {
+      quizTimer = setInterval(() => {
         time = time - 1;
         setQuizDuration(time);
         setQuizDuration(time);
@@ -403,8 +403,8 @@ const UploadPdf = () => {
   };
 
   const submitQuiz = () => {
-    time = 0;
     setQuizDuration(null);
+    clearInterval(quizTimer);
     let result: any = {};
     const array: any[] = [];
     let correctQuestions = 0;
@@ -428,6 +428,7 @@ const UploadPdf = () => {
 
     result.questions = array
     result.correct_questions = correctQuestions;
+    console.log(result)
 
     setQuizResult(result);
     setQuizExplanationUI(true);
@@ -439,10 +440,6 @@ const UploadPdf = () => {
     }, 300);
   }, [speechToTextResponse]);
 
-  useEffect(() => {
-    time = quizDuration;
-
-  }, [quizDuration]);
 
   const optionLetters = ["A", "B", "C", "D"];
 
@@ -784,7 +781,7 @@ const UploadPdf = () => {
                     <div className="w-full flex flex-col overflow-y-auto">
                       <h3 className="text-black text-xl md:text-3xl">
                         {question.question_number}.&nbsp;
-                        {quizQuestions[currentQuestion].question}
+                        {question.question}
                       </h3>
 
                       {question.options.map((option, index) => {
