@@ -59,7 +59,7 @@ interface quizResult {
     correct: boolean;
     explanation: string;
     correct_questions: number;
-  }[]
+  }[];
 }
 
 const UploadPdf = () => {
@@ -107,9 +107,8 @@ const UploadPdf = () => {
   const [generatingQuiz, setGeneratingQuiz] = useState<boolean>(false);
   const [quizExplanationUI, setQuizExplanationUI] = useState<boolean>(false);
   const [quizResult, setQuizResult] = useState<quizResult>([] as any);
-  const [pdfContent, setPDFContent] = useState('');
+  const [pdfContent, setPDFContent] = useState("");
   const [isQuizTimeUp, setIsQuizTimeUp] = useState(false);
-
 
   const submitQuizButton = useRef(null);
 
@@ -325,7 +324,6 @@ const UploadPdf = () => {
     }
   };
 
-
   const createQuiz = async () => {
     try {
       setGeneratingQuiz(true);
@@ -366,7 +364,7 @@ const UploadPdf = () => {
         "explanation": ""
         }
         ]
-        Make questions specific, technical, and derived directly from the document.
+        Make questions specific, technical, and derived directly from the document. You must generate exactly ${numberOfQuizQuestions} questions.
         `,
       ]);
 
@@ -383,16 +381,15 @@ const UploadPdf = () => {
       let time = parseInt(quizDuration);
 
       quizTimer = setInterval(() => {
-        if(time >= 1 && quizExplanationUI == false){
+        if (time >= 1 && quizExplanationUI == false) {
           time = time - 1;
           setQuizDuration(time);
           setQuizDuration(time);
-          if(time == 0){
-            setIsQuizTimeUp(true)
+          if (time == 0) {
+            setIsQuizTimeUp(true);
           }
         }
       }, 1000);
-
     } catch (error: any) {
       if (error.message != "b") {
         setGeneratingQuiz(false);
@@ -405,7 +402,6 @@ const UploadPdf = () => {
   const chooseAnswer = (index: number) => {
     let answers = userAnswers;
     answers[currentQuestion] = quizQuestions[currentQuestion].options[index];
-
   };
 
   const submitQuiz = () => {
@@ -426,16 +422,15 @@ const UploadPdf = () => {
         explanation: question.explanation,
       };
 
-
-      if(object.correct){
-        correctQuestions++
+      if (object.correct) {
+        correctQuestions++;
       }
       array.push(object);
     });
 
-    result.questions = array
+    result.questions = array;
     result.correct_questions = correctQuestions;
-    console.log(result)
+    console.log(result);
 
     setQuizResult(result);
     setQuizExplanationUI(true);
@@ -446,7 +441,6 @@ const UploadPdf = () => {
       submitPDFQuestion();
     }, 300);
   }, [speechToTextResponse]);
-
 
   const optionLetters = ["A", "B", "C", "D"];
 
@@ -528,9 +522,8 @@ const UploadPdf = () => {
         </div>
       )}
 
-      {
-        isQuizTimeUp && (
-          <div
+      {isQuizTimeUp && (
+        <div
           className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col"
           style={{ zIndex: 105 }}
         >
@@ -538,11 +531,15 @@ const UploadPdf = () => {
             <CgClose className="text-7xl text-red-600 mx-auto"></CgClose>
             <h3 className="text-3xl">Your timeis Up!!!</h3>
 
-            <button className="w-11/12 md:w-52 bg-black text-white h-12 rounded-2xl" onClick={submitQuiz}>Ok</button>
+            <button
+              className="w-11/12 md:w-52 bg-black text-white h-12 rounded-2xl"
+              onClick={submitQuiz}
+            >
+              Ok
+            </button>
           </div>
         </div>
-        )
-      }
+      )}
 
       {quizSettingUI && (
         <div
@@ -591,6 +588,7 @@ const UploadPdf = () => {
                   <option value="900">15 Minutes</option>
                   <option value="1800">30 Minutes</option>
                   <option value="3600">1 hour</option>
+                  <option value="7200">2 hour</option>
                 </select>
                 <select
                   onInput={(e: any) => {
@@ -639,8 +637,12 @@ const UploadPdf = () => {
         >
           <div className="w-full h-full md:h-auto flex flex-col gap-y-5 md:gap-y-10 bg-white md:w-2/3 xl:w-1/2 md:rounded-3xl shadow-2xl justify-between md:justify-center items-center p-6 md:p-10 overflow-y-auto">
             <h3 className="text-black text-3xl text-start mt-12 md:mt-0">
-              {Math.floor(quizDuration / 3600)}:{Math.floor(quizDuration / 60) < 10 ? '0' : ''}{Math.floor(quizDuration / 60)}:
-              {quizDuration % 60 < 10 ? '0' : ''}{quizDuration % 60}
+              {Math.floor(quizDuration / 3600) < 10 ? "0" : ""}
+              {Math.floor(quizDuration / 3600)}:
+              {Math.floor(quizDuration / 60) < 10 ? "0" : ""}
+              {Math.floor(quizDuration / 60)}:
+              {quizDuration % 60 < 10 ? "0" : ""}
+              {quizDuration % 60}
             </h3>
 
             <div className="flex flex-col w-full md:justify-center flex-grow">
@@ -740,15 +742,25 @@ const UploadPdf = () => {
             <div className="flex flex-col w-full">
               <div className="flex flex-col w-full">
                 <div className="flex flex-row flex-wrap gap-2">
-                  {
-                    quizQuestions.map((question, index) => {
-                      return(
-                        <div className={`w-10 h-10 flex items-center justify-center border ${currentQuestion == index ? 'text-white bg-black' : 'text-black hover:bg-gray-100 hover:text-black'} ${userAnswers[index] !== undefined && 'bg-green-600 border-green-600 text-white'} border-black cursor-pointer`} onClick={() => {setCurrentQuestion(index)}}>
-                          {index+1}
-                        </div>
-                      )
-                    })
-                  }
+                  {quizQuestions.map((question, index) => {
+                    return (
+                      <div
+                        className={`w-10 h-10 flex items-center justify-center border ${
+                          currentQuestion == index
+                            ? "text-white bg-black"
+                            : "text-black hover:bg-gray-100 hover:text-black"
+                        } ${
+                          userAnswers[index] !== undefined &&
+                          "bg-green-600 border-green-600 text-white"
+                        } border-black cursor-pointer`}
+                        onClick={() => {
+                          setCurrentQuestion(index);
+                        }}
+                      >
+                        {index + 1}
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="flex flex-col md:flex-row md:justify-between mt-10">
                   <button
@@ -796,7 +808,8 @@ const UploadPdf = () => {
           <div className="w-full h-full md:h-auto bg-white md:rounded-3xl flex flex-col items-center pt-5 md:pt-0 gap-y-10 md:gap-y-0 p-6 xl:w-2/3 overflow-y-auto">
             <div className="w-full flex flex-col justify-start items-center gap-y-10 mt-10">
               <h3 className="text-black text-2xl md:text-4xl text-start w-full">
-                Correct questions: {quizResult.correct_questions}/{(quizResult as any).questions.length}
+                Correct questions: {quizResult.correct_questions}/
+                {(quizResult as any).questions.length}
               </h3>
               <div className="w-full flex flex-col gap-y-6 items-center justify-center">
                 {quizResult.questions.map((question) => {

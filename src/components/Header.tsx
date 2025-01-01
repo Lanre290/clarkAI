@@ -46,38 +46,47 @@ const Header = () => {
         script.src =
           "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
         script.async = true;
+  
+        // Add error event listener
+        script.onerror = (error) => {
+          console.error("Google Translate script failed to load:", error);
+        };
+  
         document.body.appendChild(script);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error adding Google Translate script:", error);
+      }
     };
-
+  
     const initGoogleTranslate = () => {
       try {
         (window as any).googleTranslateElementInit = () => {
           if (translateRef.current) {
             new (window as any).google.translate.TranslateElement(
               {
-                pageLanguage: "en",
+                pageLanguage: "en", // Default language
                 includedLanguages: languages.map((lang) => lang.code).join(","),
                 autoDisplay: false,
               },
               translateRef.current
             );
-
-            let elementArray: Element[] = [];
+  
+            // Handle dropdown manipulation
             const selectDropdownContainer = (
               translateRef.current as HTMLElement
             ).firstElementChild;
-
+  
             if (selectDropdownContainer) {
+              let elementArray: Element[] = [];
               Array.from(selectDropdownContainer.children).forEach((child) => {
                 elementArray.push(child);
               });
-              selectDropdownContainer.textContent = '';
+              selectDropdownContainer.textContent = "";
               elementArray.forEach((child) => {
                 selectDropdownContainer.appendChild(child);
               });
             }
-
+  
             // Listen for language change event
             const translateElement = document.querySelector(".goog-te-combo");
             if (translateElement) {
@@ -89,14 +98,35 @@ const Header = () => {
             }
           }
         };
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error initializing Google Translate:", error);
+      }
     };
-
+  
+    const handleGlobalErrors = () => {
+      window.addEventListener("error", (event) => {
+        console.error("Global error detected:", event.error);
+      });
+  
+      window.addEventListener("unhandledrejection", (event) => {
+        console.error("Unhandled promise rejection:", event.reason);
+      });
+    };
+  
     setTimeout(() => {
       addGoogleTranslateScript();
       initGoogleTranslate();
     }, 1000);
+  
+    handleGlobalErrors();
+  
+    // Cleanup listeners on unmount
+    return () => {
+      window.removeEventListener("error", () => {});
+      window.removeEventListener("unhandledrejection", () => {});
+    };
   }, []);
+  
 
   return (
     <div
