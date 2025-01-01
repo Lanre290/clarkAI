@@ -25,6 +25,9 @@ const Header = () => {
     { code: "ru", name: "Russian" },
     { code: "hi", name: "Hindi" },
     { code: "sw", name: "Swahili" },
+    { code: "yo", name: "Yoruba" },
+    { code: "ha", name: "Hausa" },
+    { code: "ig", name: "Igbo" }, 
   ];
 
   useEffect(() => {
@@ -53,6 +56,7 @@ const Header = () => {
           if (translateRef.current) {
             new (window as any).google.translate.TranslateElement(
               {
+                pageLanguage: "en",
                 includedLanguages: languages.map((lang) => lang.code).join(","),
                 autoDisplay: false,
               },
