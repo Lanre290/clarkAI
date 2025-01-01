@@ -383,7 +383,7 @@ const UploadPdf = () => {
       let time = parseInt(quizDuration);
 
       quizTimer = setInterval(() => {
-        if(time >= 1){
+        if(time >= 1 && quizExplanationUI == false){
           time = time - 1;
           setQuizDuration(time);
           setQuizDuration(time);
