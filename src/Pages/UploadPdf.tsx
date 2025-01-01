@@ -108,6 +108,10 @@ const UploadPdf = () => {
   const [quizExplanationUI, setQuizExplanationUI] = useState<boolean>(false);
   const [quizResult, setQuizResult] = useState<quizResult>([] as any);
   const [pdfContent, setPDFContent] = useState('');
+  const [isQuizTimeUp, setIsQuizTimeUp] = useState(false);
+
+
+  const submitQuizButton = useRef(null);
 
   const submitMessageButton = useRef<null | HTMLButtonElement>(null);
   const readButton = useRef<null | HTMLButtonElement>(null);
@@ -379,11 +383,13 @@ const UploadPdf = () => {
       let time = parseInt(quizDuration);
 
       quizTimer = setInterval(() => {
-        time = time - 1;
-        setQuizDuration(time);
-        setQuizDuration(time);
-        if(time == 0){
-          submitQuiz();
+        if(time >= 1){
+          time = time - 1;
+          setQuizDuration(time);
+          setQuizDuration(time);
+          if(time == 0){
+            setIsQuizTimeUp(true)
+          }
         }
       }, 1000);
 
@@ -405,6 +411,7 @@ const UploadPdf = () => {
   const submitQuiz = () => {
     setQuizDuration(null);
     clearInterval(quizTimer);
+    setIsQuizTimeUp(false);
     let result: any = {};
     const array: any[] = [];
     let correctQuestions = 0;
@@ -520,6 +527,22 @@ const UploadPdf = () => {
           </select>
         </div>
       )}
+
+      {
+        isQuizTimeUp && (
+          <div
+          className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col"
+          style={{ zIndex: 105 }}
+        >
+          <div className="w-full md:w-96 bg-white rounded-3xl p-8 flex flex-col justify-center items-center gap-y-5">
+            <CgClose className="text-7xl text-red-600 mx-auto"></CgClose>
+            <h3 className="text-3xl">Your timeis Up!!!</h3>
+
+            <button className="w-11/12 md:w-52 bg-black text-white h-12 rounded-2xl" onClick={submitQuiz}>Ok</button>
+          </div>
+        </div>
+        )
+      }
 
       {quizSettingUI && (
         <div
@@ -825,6 +848,7 @@ const UploadPdf = () => {
                   setQuizQuestions([]);
                   setCurrentQuestion(0);
                 }}
+                ref={submitQuizButton}
               >
                 Back
               </button>
