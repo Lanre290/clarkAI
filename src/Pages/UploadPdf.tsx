@@ -637,7 +637,7 @@ const UploadPdf = () => {
           className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-90 flex items-center justify-center flex-col"
           style={{ zIndex: 100, backdropFilter: "blur(3px)" }}
         >
-          <div className="w-full h-full md:h-auto flex flex-col gap-y-5 md:gap-y-10 bg-white md:w-2/3 xl:w-1/2 md:rounded-3xl shadow-2xl justify-between md:justify-center items-center p-6 md:p-10">
+          <div className="w-full h-full md:h-auto flex flex-col gap-y-5 md:gap-y-10 bg-white md:w-2/3 xl:w-1/2 md:rounded-3xl shadow-2xl justify-between md:justify-center items-center p-6 md:p-10 overflow-y-auto">
             <h3 className="text-black text-3xl text-start mt-12 md:mt-0">
               {Math.floor(quizDuration / 3600)}:{Math.floor(quizDuration / 60) < 10 ? '0' : ''}{Math.floor(quizDuration / 60)}:
               {quizDuration % 60 < 10 ? '0' : ''}{quizDuration % 60}
