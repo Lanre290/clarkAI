@@ -1,17 +1,27 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 
+// export interface User {
+//     token: string;
+//     user: {
+//         id: string;
+//         name: string;
+//         email: string;
+//         country: string;
+//         role: string;
+//         is_premium: boolean;
+//         streak_count: number;
+//     }
+// }
+
 export interface User {
-    token: string;
-    user: {
-        id: string;
-        name: string;
-        email: string;
-        country: string;
-        role: string;
-        is_premium: boolean;
-        streak_count: number;
-    }
+    id: string;
+    name: string;
+    email: string;
+    country: string;
+    role: string;
+    is_premium: boolean;
+    streak_count: number;
 }
 
 interface UserContextProps {

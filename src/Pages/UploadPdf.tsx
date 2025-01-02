@@ -24,6 +24,7 @@ import { BiCopy, BiPause, BiPlay, BiStop, BiVolumeFull } from "react-icons/bi";
 import Listening from "../components/Listening";
 import { geminiModel } from "../App";
 import Loading from "../components/Loading";
+import { Link } from "react-router-dom";
 
 export interface messageInterface {
   src?: string;
@@ -301,8 +302,8 @@ const UploadPdf = () => {
         throw new Error();
       }
 
-      if (filename.length == 0) {
-        throw new Error("Upload a PDF file to interact with AI.");
+      if (pdfFile == null) {
+        throw new Error("Upload a valid PDF file to interact with AI.");
       }
 
       let processedMessage = {
@@ -877,9 +878,9 @@ const UploadPdf = () => {
         >
           <div className="flex flex-col md:flex-row items-center justify-start w-full mt-7 md:ml-10 gap-x-3 gap-y-2">
             <div className="flex flex-row items-center justify-start w-full md:w-min">
-              <a href={"/home"} className="p-4 cursor-pointer">
+              <Link to={"/home"} className="p-4 cursor-pointer">
                 <BsHouse className="text-black text-5xl"></BsHouse>
-              </a>
+              </Link>
               <button className="bg-black text-white rounded-3xl cursor-pointer w-64 h-12 md:h-auto flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl relative">
                 <PiUpload className="text-2xl"></PiUpload>
                 upload PDF

@@ -9,7 +9,6 @@ import {
   BiVolumeFull,
 } from "react-icons/bi";
 import {
-  PiAirplane,
   PiArrowDown,
   PiArrowUpBold,
   PiLink,
@@ -23,7 +22,7 @@ import { toast } from "react-toastify";
 import { suggestQuestion, SpeechSynthesisService } from "../script";
 import ReactMarkdown from "react-markdown";
 import { genAI } from "../script";
-import { User, useUser } from "../context/UserContext";
+import { useUser } from "../context/UserContext";
 import { BsHouse } from "react-icons/bs";
 import Listening from "../components/Listening";
 import Loading from "../components/Loading";
@@ -508,12 +507,12 @@ const Chat = () => {
 
       <div className="hidden flex-col h-screen w-72 overflow-y-auto bg-gray-100">
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
-          <a href={"/home"}>
+          <Link to={"/home"}>
             <BsHouse
               className="text-black cursor-pointer text-4xl"
               title="Home"
             ></BsHouse>
-          </a>
+          </Link>
 
           <div
             className="flex flex-row"
@@ -547,11 +546,11 @@ const Chat = () => {
 
       <div className="flex flex-col w-full h-screen md:w-11/12 lg:w-4/6 xl:w-3/6 mx-auto justify-center items-center relative pt-16">
         <div className="flex flex-row items-center justify-between w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
-          <a href={"/home"} className="">
+          <Link to={"/home"} className="">
             <button className="cursor-pointer" title="My profile">
               <BsHouse className="text-black text-5xl font-light"></BsHouse>
             </button>
-          </a>
+          </Link>
 
           <Link to={"/profile"}>
             <button className="cursor-pointer" title="My profile">
