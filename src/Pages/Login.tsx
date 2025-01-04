@@ -1,5 +1,4 @@
 import { PiRobotThin } from "react-icons/pi";
-import googleImage from "./../assets/images/google.png";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -22,6 +21,51 @@ const Login = () => {
   const [isGoogleSignup, setIsGoogleSignup] = useState(false);
 
   const navigate = useNavigate();
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const triggerForgotPassword = async () => {
+    try {
+      if(!email){
+        toast.error("Email is required.");
+        throw new Error('');
+      }
+
+      if (!emailRegex.test(email)){
+        toast.error("Invalid email.");
+        throw new Error('');
+      }
+
+      const body = {
+        email: email,
+        url: `${window.location.protocol}//${location.host}`
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/auth`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
+  
+      if (response.ok) {
+        toast.info('A reset password mail has been sent to your inbox.', {
+          autoClose: 10000,
+        });
+      } else {
+        toast.info('Error sending forgot a password mail.', {
+          autoClose: 5000,
+        });
+      }
+        
+    } catch (error: any) {
+      
+    }
+      
+  }
 
   const handleSubmit = async (e?: any) => {
     if(isGoogleSignup == false){
@@ -153,6 +197,10 @@ const Login = () => {
             placeholder="Password..."
             required
           />
+
+            <h3 className="text-black hover:underline cursor-pointer text-right" onClick={triggerForgotPassword}>
+              Forgot password?
+            </h3>
 
           <Link to="/signup" className="mt-10">
             <h3 className="text-black underline cursor-pointer text-center">

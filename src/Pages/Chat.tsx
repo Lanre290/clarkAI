@@ -114,6 +114,12 @@ const Chat = () => {
     };
 
     setMessages([...messages, userMessage, aiResponse]);
+    setTimeout(() => {
+      console.log(messages.length)
+      if(messages.length == 0){
+        createNewChat();
+      }
+    }, 1500);
     setIsTyping(false);
 
     setIsMessageByVoice(false);
@@ -152,6 +158,7 @@ const Chat = () => {
         message: message,
       };
       setMessages([...messages, processedMessage]);
+      console.log(messages)
       setMessage("");
 
 
@@ -505,7 +512,7 @@ const Chat = () => {
         </div>
       )}
 
-      <div className="hidden flex-col h-screen w-72 overflow-y-auto bg-gray-100">
+      <div className="hidden md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100">
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
           <Link to={"/home"}>
             <BsHouse
@@ -517,7 +524,7 @@ const Chat = () => {
           <div
             className="flex flex-row"
             onClick={() => {
-              createNewChat();
+              setMessages([])
             }}
           >
             <BiEdit
