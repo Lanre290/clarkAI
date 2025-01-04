@@ -21,6 +21,9 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         navigate("/login");
       } else if (location.pathname == "/signup") {
         navigate("/signup");
+      }
+      else if (location.pathname == "/forgot-password") {
+        navigate("/forgot-password");
       } else if (location.pathname == "/") {
         navigate("/");
       } else {
@@ -58,6 +61,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         if (
           location.pathname === "/login" ||
           location.pathname === "/signup" ||
+          location.pathname === "/forgot-password" ||
           location.pathname === "/"
         ) {
           navigate("/home");
