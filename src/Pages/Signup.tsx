@@ -132,7 +132,7 @@ const Signup = () => {
         setLoading(false);
         const res = await response.json();
         setUser(res);
-        localStorage.setItem("user", JSON.stringify(res));
+        localStorage.setItem("user", JSON.stringify(res.user));
         toast.info("Account created successfully");
         localStorage.setItem("token", res.token);
 

@@ -102,7 +102,7 @@ const Login = () => {
         let res = await response.json();
         const token = res.token;
         setUser(res);
-        localStorage.setItem('user', JSON.stringify(res))
+        localStorage.setItem('user', JSON.stringify(res.user))
         localStorage.setItem('token', token);
         toast.info('Login successful');
 

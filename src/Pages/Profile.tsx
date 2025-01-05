@@ -61,10 +61,12 @@ const Profile = () => {
   useEffect(() => {
     let new_user;
     new_user = user;
+    console.log(new_user)
 
     if(!user){
         const object = JSON.parse(localStorage.getItem('user') as string);
         setUser(object);
+        console.log(object);
         new_user = object;
         setName((new_user as any)?.name as string);
         setEmail((new_user as any)?.email as string);
@@ -132,7 +134,7 @@ const Profile = () => {
                 } rounded-2xl w-11/12 md:w-64`}
                 onClick={submitRequest}
                 title={
-                  submittingRequest ? "Creating your quiz" : "Click to proceed."
+                  submittingRequest ? "processing your request" : "Click to proceed."
                 }
               >
                 {submittingRequest ? <Loading small></Loading> : "Proceed"}
