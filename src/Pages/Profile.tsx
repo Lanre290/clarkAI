@@ -61,12 +61,13 @@ const Profile = () => {
   useEffect(() => {
     let new_user;
     new_user = user;
-    console.log(new_user)
+    setName((new_user as any)?.name as string);
+    setEmail((new_user as any)?.email as string);
+    setStreakDays((new_user as any)?.streak_count as number);
 
     if(!user){
         const object = JSON.parse(localStorage.getItem('user') as string);
         setUser(object);
-        console.log(object);
         new_user = object;
         setName((new_user as any)?.name as string);
         setEmail((new_user as any)?.email as string);
