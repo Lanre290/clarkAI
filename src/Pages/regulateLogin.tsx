@@ -11,7 +11,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
   const location = window.location;
 
   useEffect(() => {
-    if(location.pathname === "/forgot-password"){
+    if(location.pathname == "/forgot-password"){
       navigate('/forgot-password');
     }
     else{
@@ -32,6 +32,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         navigate("/");
       } else {
         navigate("/login");
+        console.log('wjgfwjfu');
       }
     } else {
       if (localStorage.getItem("token")) {
