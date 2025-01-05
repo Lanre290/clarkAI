@@ -7,6 +7,12 @@
     <title>ClarkAI</title>
   </head>
   <body>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('token')) {
+        localStorage.setItem('fg', urlParams.get('token'));
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

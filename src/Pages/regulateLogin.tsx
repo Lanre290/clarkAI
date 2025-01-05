@@ -32,7 +32,10 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         navigate("/");
       } else {
         navigate("/login");
-        console.log('wjgfwjfu');
+        let value = localStorage.getItem('fg') as unknown as boolean;
+        if(value){
+          navigate(`forgot-password?token=${value}`);
+        }
       }
     } else {
       if (localStorage.getItem("token")) {
