@@ -61,6 +61,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
             localStorage.setItem('user', JSON.stringify(user_));
           } else {
             toast.error("Error fetching user Data. Please login again.");
+            localStorage.clear();
             navigate("/login");
           }
         };
