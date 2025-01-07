@@ -407,11 +407,6 @@ const Chat = () => {
         body: JSON.stringify(message)
       }
     );
-
-
-    if (response.ok) {
-      let res = await response.json();
-    }
   }
 
   const resetChat = () => {
