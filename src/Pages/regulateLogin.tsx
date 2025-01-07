@@ -60,7 +60,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
           } else {
             toast.error("Error fetching user Data. Please login again.");
             localStorage.clear();
-            navigate("/login");
+            navigate("/");
           }
         };
 
@@ -75,7 +75,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         }
       } else {
         localStorage.clear();
-        navigate("/login");
+        navigate("/");
       }
     }
     }
