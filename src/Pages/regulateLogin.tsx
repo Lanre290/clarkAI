@@ -22,14 +22,14 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         (location.pathname as string) != "/signup")
     ) {
       if (location.pathname == "/login") {
-        navigate("/login");
+        navigate("/");
       } else if (location.pathname == "/signup") {
         navigate("/signup");
       }
       else if (location.pathname == "/forgot-password") {
         navigate("/forgot-password");
       } else {
-        navigate("/login");
+        navigate("/");
         let value = localStorage.getItem('fg') as unknown as boolean;
         if(value){
           navigate(`forgot-password?token=${value}`);
