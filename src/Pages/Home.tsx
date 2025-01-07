@@ -14,6 +14,7 @@ import userAnimationData from './../assets/animations/userAnimation.json';
 import Lottie from "react-lottie";
 import { Fade } from "react-awesome-reveal";
 import { geminiModel } from "../App";
+import { useNavigate } from "react-router-dom";
 
 
 const loadingUserOption = {
@@ -37,6 +38,7 @@ const Home = () => {
   const [isAppLoaded, setIsAppLoaded] = useState(false);
 
   const userContext = createContext(null);
+  const navigate = useNavigate();
 
   if (!userContext) {
   }
@@ -73,7 +75,7 @@ const Home = () => {
         setIsLoading(false);
       } else {
         toast.error('Error fetching user Data. Please login again.');
-        ('/login');
+        navigate("/login");
       }
   }
 

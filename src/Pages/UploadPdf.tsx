@@ -31,6 +31,7 @@ export interface messageInterface {
   video?: boolean;
   fromUser: boolean;
   message: string;
+  chat_id?: number | null;
 }
 
 export const loadingAnimationOption = {

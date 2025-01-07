@@ -23,7 +23,7 @@ import { suggestQuestion, SpeechSynthesisService } from "../script";
 import ReactMarkdown from "react-markdown";
 import { genAI } from "../script";
 import { useUser } from "../context/UserContext";
-import { BsHouse } from "react-icons/bs";
+import { BsHouse, BsJustifyLeft, BsLayoutSidebar } from "react-icons/bs";
 import Listening from "../components/Listening";
 import Loading from "../components/Loading";
 import axios from "axios";
@@ -54,6 +54,8 @@ const Chat = () => {
   const [videoData, setvideoData] = useState(null);
   const [transcript, setTranscript] = useState("");
   const [fetchingYoutubeData, setFetchingYoutubeData] = useState<boolean>(false);
+  const [currentChatId, setCurrentchatId] = useState<number | null>(null);
+  const [isSidebar ,setisSidebar] = useState(false);
 
   const readButton = useRef<null | HTMLButtonElement>(null);
   const { user, setUser } = useUser();
@@ -61,37 +63,31 @@ const Chat = () => {
     (window as any).webkitSpeechRecognition)();
   const chatWindow = useRef<HTMLDivElement & any>();
   const youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+  const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const user_: any = JSON.parse(localStorage.getItem("user") as string);
-    if (!user) {
-      setUser(user_);
-      setName(user_?.name as string);
+
+
+  const fetchPreviousChats = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/chats`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+      }
+    );
+
+
+    if (response.ok) {
+      let res = await response.json();
+      setPreviousChats(res.data);
     } else {
-      setName(user_?.name as string);
+      toast.error('Error fetching user Data. Please login again.');
     }
-  }, []);
+  }
 
-  useLayoutEffect(() => {
-    setTimeout(() => {
-      submitQuestion();
-    }, 300);
-  }, [speechToTextResponse]);
-
-  useEffect(() => {
-    const service = new SpeechSynthesisService(speechText);
-    setSpeechService(service);
-    setVoices(speechService?.getVoices());
-
-    try {
-      (speechService as any).utterance.onend = () => {
-        setIsSpeaking(false);
-      };
-    } catch (error) {}
-    return () => {
-      service.stop();
-    };
-  }, [speechText]);
 
   const generateAIAnswer = async (
     dependencies: string[],
@@ -111,15 +107,11 @@ const Chat = () => {
     let aiResponse = {
       fromUser: false,
       message: aiText,
+      chat_id: currentChatId
     };
+    createMessage(aiResponse);
 
     setMessages([...messages, userMessage, aiResponse]);
-    setTimeout(() => {
-      console.log(messages.length)
-      if(messages.length == 0){
-        createNewChat();
-      }
-    }, 1500);
     setIsTyping(false);
 
     setIsMessageByVoice(false);
@@ -156,9 +148,10 @@ const Chat = () => {
       let processedMessage = {
         fromUser: true,
         message: message,
+        chat_id: currentChatId
       };
+      createMessage(processedMessage);
       setMessages([...messages, processedMessage]);
-      console.log(messages)
       setMessage("");
 
 
@@ -173,14 +166,31 @@ const Chat = () => {
     }
   };
 
-  const createNewChat = () => {
-    let previousChatObject = {
-      title: messages[0].message,
-      messages: messages,
-    };
 
-    setPreviousChats([...previousChats, previousChatObject]);
-    setMessages([]);
+  const createNewChat = async (title: string) => {
+    const body = {
+      title: title
+    }
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/chats`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      }
+    );
+
+
+    if (response.ok) {
+      let res = await response.json();
+      setCurrentchatId(res.data.id);
+      setPreviousChats(res.chats);
+    } else {
+      toast.error('Error fetching conversations.');
+    }
   };
 
   SpeechRecognition.onresult = (event: any) => {
@@ -298,9 +308,11 @@ const Chat = () => {
       video: true,
       src: (body as any).snippet.thumbnails.high.url,
       fromUser: true,
-      message: `${(body as any).snippet.localized.title}`
+      message: `${(body as any).snippet.localized.title}`,
+      chat_id: currentChatId
     };
 
+    createMessage(message_)
     setMessages([...messages, message_]);
     scrollToBottom();
 
@@ -348,7 +360,7 @@ const Chat = () => {
       `https://www.googleapis.com/youtube/v3/captions/${caption.id}`,
       {
         params: {
-          tfmt: "sbv", // Subtitle format (SBV or TTML)
+          tfmt: "sbv",
           key: youtubeApiKey,
         },
       }
@@ -356,6 +368,97 @@ const Chat = () => {
 
     setTranscript(transcriptResponse.data);
   };
+
+
+  const fetchMessages = async (id: number) => {
+    setisSidebar(false);
+    setIsTyping(false);
+    setCurrentchatId(id);
+    setMessages([]);
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/messages/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+
+    if (response.ok) {
+      let res = await response.json();
+      setMessages(res.data)
+    } else {
+      toast.error('Unable to load conversation.');
+    }
+  }
+
+  const createMessage = async (message: messageInterface) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/messages`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(message)
+      }
+    );
+
+
+    if (response.ok) {
+      let res = await response.json();
+    }
+  }
+
+  const resetChat = () => {
+    setCurrentchatId(null);
+    setMessages([]);
+  }
+
+  useEffect(() => {
+    if(currentChatId == null && messages.length == 1){
+      createNewChat(messages[0].message);
+    }
+  
+  }, [messages]);
+
+  
+  useEffect(() => {
+    const user_: any = JSON.parse(localStorage.getItem("user") as string);
+    if (!user) {
+      setUser(user_);
+      setName(user_?.name as string);
+    } else {
+      setName(user_?.name as string);
+    }
+    fetchPreviousChats();
+  }, []);
+
+  useLayoutEffect(() => {
+    setTimeout(() => {
+      submitQuestion();
+    }, 300);
+  }, [speechToTextResponse]);
+
+  useEffect(() => {
+    const service = new SpeechSynthesisService(speechText);
+    setSpeechService(service);
+    setVoices(speechService?.getVoices());
+
+    try {
+      (speechService as any).utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+    } catch (error) {}
+    return () => {
+      service.stop();
+    };
+  }, [speechText]);
+  
 
 
   return (
@@ -512,7 +615,8 @@ const Chat = () => {
         </div>
       )}
 
-      <div className="hidden md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100">
+
+      <div className={`${isSidebar ? 'flex' : 'hidden'} fixed top-0 left-0 bottom-0  md:static md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100 z-50`}>
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
           <Link to={"/home"}>
             <BsHouse
@@ -530,6 +634,7 @@ const Chat = () => {
             <BiEdit
               className="text-black cursor-pointer text-4xl"
               title="Create new chat"
+              onClick={resetChat}
             ></BiEdit>
           </div>
         </div>
@@ -537,9 +642,9 @@ const Chat = () => {
           {previousChats.map((chat) => {
             return (
               <div
-                className="w-11/12 m-2 rounded-2xl bg-gray-200 items-center p-2 cursor-pointer hover:bg-gray-300 truncate"
+                className={`w-11/12 my-1 mx-auto rounded-2xl ${currentChatId == chat.id ? 'bg-gray-300' : 'bg-transparent'} items-center p-2 cursor-pointer hover:bg-gray-300 truncate`}
                 onClick={() => {
-                  setMessages(chat.messages);
+                  fetchMessages(chat.id);
                 }}
               >
                 {chat.title}
@@ -553,17 +658,30 @@ const Chat = () => {
 
       <div className="flex flex-col w-full h-screen md:w-11/12 lg:w-4/6 xl:w-3/6 mx-auto justify-center items-center relative pt-16">
         <div className="flex flex-row items-center justify-between w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
-          <Link to={"/home"} className="">
-            <button className="cursor-pointer" title="My profile">
-              <BsHouse className="text-black text-5xl font-light"></BsHouse>
-            </button>
-          </Link>
+          {
+            screen.width < 768 && (
+              <button className="cursor-pointer" title="My profile" onClick={() => {
+                setisSidebar(true)
+              }}>
+                <BsJustifyLeft className="text-black text-5xl font-light"></BsJustifyLeft>
+              </button>
+            )
+          }
 
-          <Link to={"/profile"}>
-            <button className="cursor-pointer" title="My profile">
-              <PiUserCircleThin className="text-black text-5xl font-light"></PiUserCircleThin>
-            </button>
-          </Link>
+
+          {
+            isSidebar && screen.width < 768 && (
+              <div className="fixed top-0 left-0 bottom-0 right-0 bg-black bg-opacity-50 z-40"></div>
+            )
+          }
+          
+          {
+            isSidebar && (
+              <button className="cursor-pointer z-50" title="My profile" onClick={() => {setisSidebar(false)}}>
+                <CgClose className="text-black text-5xl font-light"></CgClose>
+              </button>
+            )
+          }
         </div>
 
         <div

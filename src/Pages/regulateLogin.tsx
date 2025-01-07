@@ -28,8 +28,6 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
       }
       else if (location.pathname == "/forgot-password") {
         navigate("/forgot-password");
-      } else if (location.pathname == "/") {
-        navigate("/");
       } else {
         navigate("/login");
         let value = localStorage.getItem('fg') as unknown as boolean;
@@ -71,8 +69,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         if (
           location.pathname === "/login" ||
           location.pathname === "/signup" ||
-          location.pathname === "/forgot-password" ||
-          location.pathname === "/"
+          location.pathname === "/forgot-password"
         ) {
           navigate("/home");
         }

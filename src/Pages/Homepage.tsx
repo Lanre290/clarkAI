@@ -1,6 +1,5 @@
 import { Fade } from "react-awesome-reveal";
 import { PiArrowRight, PiRobotThin } from "react-icons/pi";
-import { Link } from "react-router-dom";
 import rocket from "./../assets/images/rocket.png";
 import app from "./../assets/images/app.png";
 import HomepageTitle from "../components/HompageTitle";
@@ -82,12 +81,12 @@ const HomePage = () => {
               </a>
             </div>
 
-            <Link to={"/signup"}>
+            <a href={"/signup"}>
               <button className="w-44 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-white h-12 gap-x-3">
               <BiLinkExternal className="text-black"></BiLinkExternal>
                 Get started
               </button>
-            </Link>
+            </a>
           </div>
 
           <div className="flex flex-col md:mt-44 mx-auto items-center justify-center gap-y-5 flex-grow">
@@ -102,12 +101,12 @@ const HomePage = () => {
             </Fade>
 
             <Fade direction="left" delay={2000}>
-              <Link to={"/signup"}>
+              <a href={"/signup"}>
                 <button className="w-56 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-white h-12 mt-16 gap-x-3">
                   Get started
                   <PiArrowRight className="text-black"></PiArrowRight>
                 </button>
-              </Link>
+              </a>
             </Fade>
           </div>
         </div>
@@ -193,12 +192,12 @@ const HomePage = () => {
       </div>
 
 
-      <Link to={"/signup"}>
+      <a href={"/signup"}>
               <button className="w-44 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-black text-white h-12 gap-x-3 mx-auto mt-20 shadow-2xl">
                 <BiLinkExternal className="text-white"></BiLinkExternal>
                 Join Us
               </button>
-            </Link>
+            </a>
 
       <div className="w-ful mt-24 relative bg-center bg-cover home-bg" id="faq">
         <div className="top-0 bottom-0 flex flex-col md:flex-row  py-10 px-5 left-0 right-0 bg-black bg-opacity-70" style={{backdropFilter: 'blur(3px)'}}>
@@ -218,15 +217,15 @@ const HomePage = () => {
             Made with 💝 by Team Zathura
           </h3>
           <h3 className="text-center text-white">
-          © Copyright 2022-2024 ClarkAI, Inc . All Rights Reserved
+          © Copyright 2024 ClarkAI, Inc . All Rights Reserved
           </h3>
 
-          <Link to={"/signup"}>
+          <a href={"/signup"}>
               <button className="w-44 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-white h-12 gap-x-3">
                 <BiLinkExternal className="text-black"></BiLinkExternal>
                 Join Us
               </button>
-            </Link>
+            </a>
         </div>
         </div>
       </div>

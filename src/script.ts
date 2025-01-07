@@ -44,7 +44,6 @@ export class SpeechSynthesisService implements SpeechSynthesisControls {
   public utterance: SpeechSynthesisUtterance;
 
   constructor(text: string) {
-    console.log(text)
     if (!('speechSynthesis' in window)) {
       toast.error('Speech synthesis not supported in this browser.');
       throw new Error('Speech synthesis not supported');
