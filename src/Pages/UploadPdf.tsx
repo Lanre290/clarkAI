@@ -631,7 +631,7 @@ const UploadPdf = () => {
         </div>
       )}
 
-      {quizUi && (
+      {quizUi && quizQuestions.length > 0 && (
         <div
           className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-90 flex items-center justify-center flex-col"
           style={{ zIndex: 100, backdropFilter: "blur(3px)" }}
@@ -640,162 +640,89 @@ const UploadPdf = () => {
             <h3 className="text-black text-3xl text-start mt-12 md:mt-0">
               {Math.floor(quizDuration / 3600) < 10 ? "0" : ""}
               {Math.floor(quizDuration / 3600)}:
-              {Math.floor(quizDuration / 60) < 10 ? "0" : ""}
-              {Math.floor(quizDuration / 60)}:
+              {Math.floor((quizDuration % 3600) / 60) < 10 ? "0" : ""}
+              {Math.floor((quizDuration % 3600) / 60)}:
               {quizDuration % 60 < 10 ? "0" : ""}
               {quizDuration % 60}
             </h3>
 
             <div className="flex flex-col w-full md:justify-center flex-grow">
               <h3 className="text-black text-xl md:text-3xl">
-                {currentQuestion + 1}.&nbsp;
-                {quizQuestions[currentQuestion].question}
+                {currentQuestion + 1}. {quizQuestions[currentQuestion].question}
               </h3>
 
               <div className="flex flex-col gap-y-3 mt-7">
-                <div className="flex flex-row gap-x-3">
-                  <input
-                    type="radio"
-                    name="quiz_options"
-                    value={quizQuestions[currentQuestion].options[0]}
-                    id="option1"
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={(e: any) => {
-                      e.target.checked = true;
-                      chooseAnswer(0);
-                    }}
-                    checked={
-                      (userAnswers[currentQuestion] !== undefined &&
-                        userAnswers[currentQuestion] ==
-                          quizQuestions[currentQuestion].options[0]) as boolean
-                    }
-                  />
-                  <label className="text-xl md:text-2xl" htmlFor="option1">
-                    {quizQuestions[currentQuestion].options[0]}
-                  </label>
-                </div>
-                <div className="flex flex-row gap-x-3">
-                  <input
-                    type="radio"
-                    name="quiz_options"
-                    value={quizQuestions[currentQuestion].options[1]}
-                    id="option2"
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={(e: any) => {
-                      e.target.checked = true;
-                      chooseAnswer(1);
-                    }}
-                    checked={
-                      (userAnswers[currentQuestion] !== undefined &&
-                        userAnswers[currentQuestion] ==
-                          quizQuestions[currentQuestion].options[1]) as boolean
-                    }
-                  />
-                  <label className="text-xl md:text-2xl" htmlFor="option2">
-                    {quizQuestions[currentQuestion].options[1]}
-                  </label>
-                </div>
-                <div className="flex flex-row gap-x-3">
-                  <input
-                    type="radio"
-                    name="quiz_options"
-                    value={quizQuestions[currentQuestion].options[2]}
-                    id="option3"
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={(e: any) => {
-                      e.target.checked = true;
-                      chooseAnswer(2);
-                    }}
-                    checked={
-                      (userAnswers[currentQuestion] !== undefined &&
-                        userAnswers[currentQuestion] ==
-                          quizQuestions[currentQuestion].options[2]) as boolean
-                    }
-                  />
-                  <label className="text-xl md:text-2xl" htmlFor="option3">
-                    {quizQuestions[currentQuestion].options[2]}
-                  </label>
-                </div>
-                <div className="flex flex-row gap-x-3">
-                  <input
-                    type="radio"
-                    name="quiz_options"
-                    value={quizQuestions[currentQuestion].options[3]}
-                    id="option4"
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={(e: any) => {
-                      e.target.checked = true;
-                      chooseAnswer(3);
-                    }}
-                    checked={
-                      (userAnswers[currentQuestion] !== undefined &&
-                        userAnswers[currentQuestion] ==
-                          quizQuestions[currentQuestion].options[3]) as boolean
-                    }
-                  />
-                  <label className="text-xl md:text-2xl" htmlFor="option4">
-                    {quizQuestions[currentQuestion].options[3]}
-                  </label>
-                </div>
+                {quizQuestions[currentQuestion].options.map((option, idx) => (
+                  <div className="flex flex-row gap-x-3" key={idx}>
+                    <input
+                      type="radio"
+                      name="quiz_options"
+                      value={option}
+                      id={`option${idx}`}
+                      className="w-6 h-6 cursor-pointer"
+                      onClick={() => chooseAnswer(idx)}
+                      checked={userAnswers[currentQuestion] === option}
+                    />
+                    <label
+                      className="text-xl md:text-2xl"
+                      htmlFor={`option${idx}`}
+                    >
+                      {option}
+                    </label>
+                  </div>
+                ))}
               </div>
             </div>
 
             <div className="flex flex-col w-full">
-              <div className="flex flex-col w-full">
-                <div className="flex flex-row flex-wrap gap-2">
-                  {quizQuestions.map((question, index) => {
-                    return (
-                      <div
-                        className={`w-10 h-10 flex items-center justify-center border ${
-                          currentQuestion == index
-                            ? "text-white bg-black"
-                            : "text-black hover:bg-gray-100 hover:text-black"
-                        } ${
-                          userAnswers[index] !== undefined &&
-                          "bg-green-600 border-green-600 text-white"
-                        } border-black cursor-pointer`}
-                        onClick={() => {
-                          setCurrentQuestion(index);
-                        }}
-                      >
-                        {index + 1}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="flex flex-col md:flex-row md:justify-between mt-10">
-                  <button
-                    className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
-                    onClick={() => {
-                      if (currentQuestion != 0) {
-                        setCurrentQuestion(currentQuestion - 1);
-                      }
-                    }}
+              <div className="flex flex-row flex-wrap gap-2">
+                {quizQuestions.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-10 h-10 flex items-center justify-center border ${
+                      currentQuestion === index
+                        ? "text-white bg-black"
+                        : "text-black hover:bg-gray-100"
+                    } ${
+                      userAnswers[index] !== undefined &&
+                      "bg-green-600 border-green-600 text-white"
+                    } border-black cursor-pointer`}
+                    onClick={() => setCurrentQuestion(index)}
                   >
-                    Previous Question
-                  </button>
-
-                  <button
-                    className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
-                    onClick={() => {
-                      if (currentQuestion != quizQuestions.length - 1) {
-                        setCurrentQuestion(currentQuestion + 1);
-                      }
-                    }}
-                  >
-                    Next Question
-                  </button>
-                </div>
+                    {index + 1}
+                  </div>
+                ))}
               </div>
 
-              <div className="flex flex-row md:justify-end mt-10">
+              <div className="flex flex-col md:flex-row md:justify-between mt-10">
                 <button
-                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center drop-shadow-2xl md:mx-0 mx-auto my-1 bg-black text-white rounded-2xl w-11/12 md:w-64 cursor-pointer"
-                  onClick={submitQuiz}
+                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
+                  onClick={() =>
+                    currentQuestion > 0 &&
+                    setCurrentQuestion(currentQuestion - 1)
+                  }
                 >
-                  Submit Quiz
+                  Previous Question
+                </button>
+                <button
+                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
+                  onClick={() =>
+                    currentQuestion < quizQuestions.length - 1 &&
+                    setCurrentQuestion(currentQuestion + 1)
+                  }
+                >
+                  Next Question
                 </button>
               </div>
+            </div>
+
+            <div className="flex flex-row md:justify-end mt-10">
+              <button
+                className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-black text-white rounded-2xl w-11/12 md:w-64 cursor-pointer"
+                onClick={submitQuiz}
+              >
+                Submit Quiz
+              </button>
             </div>
           </div>
         </div>
