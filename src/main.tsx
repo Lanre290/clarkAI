@@ -5,12 +5,15 @@ import App from './App.tsx'
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { UserProvider } from './context/UserContext.tsx';
+import ErrorBoundary from './ErrorBoundary.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ToastContainer theme='light' draggable position='top-right' autoClose={1000} toastStyle={{width: 'fit-content', padding: '20px', fontSize: '19px'}}></ToastContainer>
     <UserProvider>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
     </UserProvider>
   </StrictMode>,
 )

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import {
   BiCopy,
@@ -6,6 +6,7 @@ import {
   BiPause,
   BiPlay,
   BiStop,
+  BiTrash,
   BiVolumeFull,
 } from "react-icons/bi";
 import {
@@ -13,7 +14,7 @@ import {
   PiArrowUpBold,
   PiLink,
   PiPaperPlane,
-  PiUserCircleThin,
+  PiTrashFill,
   PiWaveform,
 } from "react-icons/pi";
 import { Link } from "react-router-dom";
@@ -23,7 +24,7 @@ import { suggestQuestion, SpeechSynthesisService } from "../script";
 import ReactMarkdown from "react-markdown";
 import { genAI } from "../script";
 import { useUser } from "../context/UserContext";
-import { BsHouse, BsJustifyLeft, BsLayoutSidebar } from "react-icons/bs";
+import { BsHouse, BsJustifyLeft } from "react-icons/bs";
 import Listening from "../components/Listening";
 import Loading from "../components/Loading";
 import axios from "axios";
@@ -53,9 +54,10 @@ const Chat = () => {
   const [isLinkLayout, setIsLinkLayout] = useState(false);
   const [videoData, setvideoData] = useState(null);
   const [transcript, setTranscript] = useState("");
-  const [fetchingYoutubeData, setFetchingYoutubeData] = useState<boolean>(false);
+  const [fetchingYoutubeData, setFetchingYoutubeData] =
+    useState<boolean>(false);
   const [currentChatId, setCurrentchatId] = useState<number | null>(null);
-  const [isSidebar ,setisSidebar] = useState(false);
+  const [isSidebar, setisSidebar] = useState(false);
 
   const readButton = useRef<null | HTMLButtonElement>(null);
   const { user, setUser } = useUser();
@@ -63,9 +65,7 @@ const Chat = () => {
     (window as any).webkitSpeechRecognition)();
   const chatWindow = useRef<HTMLDivElement & any>();
   const youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
-  const token = localStorage.getItem('token');
-
-
+  const token = localStorage.getItem("token");
 
   const fetchPreviousChats = async () => {
     const response = await fetch(
@@ -74,20 +74,18 @@ const Chat = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       }
     );
-
 
     if (response.ok) {
       let res = await response.json();
       setPreviousChats(res.data);
     } else {
-      toast.error('Error fetching user Data. Please login again.');
+      toast.error("Error fetching user Data. Please login again.");
     }
-  }
-
+  };
 
   const generateAIAnswer = async (
     dependencies: string[],
@@ -107,7 +105,7 @@ const Chat = () => {
     let aiResponse = {
       fromUser: false,
       message: aiText,
-      chat_id: currentChatId
+      chat_id: currentChatId,
     };
     createMessage(aiResponse);
 
@@ -129,7 +127,7 @@ const Chat = () => {
 
   const scrollToBottom = () => {
     chatWindow.current?.scrollBy({
-      top: chatWindow.current.scrollHeight,
+      top: 9999999999999999999999999999999,
       behavior: "smooth",
     });
   };
@@ -148,48 +146,46 @@ const Chat = () => {
       let processedMessage = {
         fromUser: true,
         message: message,
-        chat_id: currentChatId
+        chat_id: currentChatId,
       };
-      createMessage(processedMessage);
       setMessages([...messages, processedMessage]);
       setMessage("");
+      scrollToBottom();
 
+
+      createMessage(processedMessage);
 
       generateAIAnswer(
         [JSON.stringify(processedMessage), JSON.stringify(messages)],
         processedMessage
       );
-
-      scrollToBottom();
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
-
   const createNewChat = async (title: string) => {
     const body = {
-      title: title
-    }
+      title: title,
+    };
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/chats`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       }
     );
-
 
     if (response.ok) {
       let res = await response.json();
       setCurrentchatId(res.data.id);
       setPreviousChats(res.chats);
     } else {
-      toast.error('Error fetching conversations.');
+      toast.error("Error fetching conversations.");
     }
   };
 
@@ -276,7 +272,7 @@ const Chat = () => {
       } else {
         setIsLoading(false);
         setFetchingYoutubeData(false);
-        throw new Error('Invalid video ID.');
+        throw new Error("Invalid video ID.");
       }
     } catch (error: any) {
       toast.error(error);
@@ -309,17 +305,19 @@ const Chat = () => {
       src: (body as any).snippet.thumbnails.high.url,
       fromUser: true,
       message: `${(body as any).snippet.localized.title}`,
-      chat_id: currentChatId
+      chat_id: currentChatId,
     };
 
-    createMessage(message_)
+    createMessage(message_);
     setMessages([...messages, message_]);
     scrollToBottom();
 
     generateAIAnswer(
       [
         (body as any).snippet.localized.description as string,
-        `you're a student assistant tasked with helping a student understand the concepts from the following video, without them needing to watch it. Based on the video description, pretend like you have acces to the video content and explain each of the key topics in detail, if there is no description use the link: ${youtubeLink}, and here is the title: ${(body as any).snippet.localized.title}, making sure to break down complex ideas in an easy-to-understand manner. The explanation should cover all the major topics and concepts mentioned`,
+        `you're a student assistant tasked with helping a student understand the concepts from the following video, without them needing to watch it. Based on the video description, pretend like you have acces to the video content and explain each of the key topics in detail, if there is no description use the link: ${youtubeLink}, and here is the title: ${
+          (body as any).snippet.localized.title
+        }, making sure to break down complex ideas in an easy-to-understand manner. The explanation should cover all the major topics and concepts mentioned`,
       ],
       message_
     );
@@ -327,9 +325,9 @@ const Chat = () => {
 
   const closeLinkLayout = () => {
     setIsLinkLayout(false);
-    setYoutubeLink('');
+    setYoutubeLink("");
     setvideoData(null);
-  }
+  };
 
   const fetchTranscript = async () => {
     const videoId = extractYouTubeId(youtubeLink);
@@ -369,7 +367,6 @@ const Chat = () => {
     setTranscript(transcriptResponse.data);
   };
 
-
   const fetchMessages = async (id: number) => {
     setisSidebar(false);
     setIsTyping(false);
@@ -381,47 +378,72 @@ const Chat = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
-
 
     if (response.ok) {
       let res = await response.json();
-      setMessages(res.data)
-    } else {
-      toast.error('Unable to load conversation.');
-    }
-  }
+      setMessages(res.data);
+      setTimeout(async () => {
+        scrollToBottom();
+        const AISuggestedQuestion = suggestQuestion([JSON.stringify(res.data)]);
+        const newQuestion = await AISuggestedQuestion;
 
-  const createMessage = async (message: messageInterface) => {
-    const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/v1/messages`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(message)
-      }
-    );
-  }
+        if (suggestedQuestion != newQuestion) {
+          setSuggestedQuestion(newQuestion);
+        }
+      }, 700);
+    } else {
+      toast.error("Unable to load conversation.");
+    }
+  };
+
+  const createMessage = (message: messageInterface) => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(message),
+    });
+
+    fetchPreviousChats();
+  };
 
   const resetChat = () => {
     setCurrentchatId(null);
     setMessages([]);
-  }
+  };
+
+  const deleteChat = async (id: number) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/chats/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.ok) {
+      toast.info("Chat deleted successfully.");
+      fetchPreviousChats();
+      setCurrentchatId(null);
+      resetChat();
+    }
+  };
 
   useEffect(() => {
-    if(currentChatId == null && messages.length == 1){
+    if (currentChatId == null && messages.length == 1) {
       createNewChat(messages[0].message);
     }
-  
   }, [messages]);
 
-  
   useEffect(() => {
     const user_: any = JSON.parse(localStorage.getItem("user") as string);
     if (!user) {
@@ -453,8 +475,9 @@ const Chat = () => {
       service.stop();
     };
   }, [speechText]);
-  
 
+
+  
 
   return (
     <div className="w-full h-full flex flex-row chat-page">
@@ -464,11 +487,14 @@ const Chat = () => {
       {isLinkLayout && (
         <div className="fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="w-full mx-2 md:w-1/2 xl:w-1/3 bg-white flex flex-col p-6 gap-y-6 md:mx-auto rounded-3xl">
-          <div className="flex flex-row justify-end">
-            <button className="w-10 h-10 bg-transparent flex items-center justify-center hover:bg-gray-200 rounded-full" onClick={closeLinkLayout}>
-              <CgClose className="text-black text-xl"></CgClose>
-            </button>
-          </div>
+            <div className="flex flex-row justify-end">
+              <button
+                className="w-10 h-10 bg-transparent flex items-center justify-center hover:bg-gray-200 rounded-full"
+                onClick={closeLinkLayout}
+              >
+                <CgClose className="text-black text-xl"></CgClose>
+              </button>
+            </div>
             {videoData && (
               <div>
                 <div className="w-full flex flex-col md:flex-row">
@@ -477,7 +503,7 @@ const Chat = () => {
                     alt="youtube thumbnail"
                     className="w-96 rounded-2xl bg-gray-200 h-40 object-cover"
                   />
-  
+
                   <div className="flex flex-col text-xl ml-3 h-40 items-center justify-center">
                     Title: {(videoData as any)?.snippet.localized.title}
                     <br />
@@ -490,19 +516,15 @@ const Chat = () => {
               </div>
             )}
 
-            {
-              !videoData && (
-                <div className="w-11/12 md:w-96 rounded-2xl bg-gray-200 h-40 object-cover flex justify-center items-center mx-auto">
-                  {
-                    fetchingYoutubeData ? (
-                      <Loading small></Loading>
-                    ): (
-                      'No data to display.'
-                    )
-                  }
-                </div>
-              )
-            }
+            {!videoData && (
+              <div className="w-11/12 md:w-96 rounded-2xl bg-gray-200 h-40 object-cover flex justify-center items-center mx-auto">
+                {fetchingYoutubeData ? (
+                  <Loading small></Loading>
+                ) : (
+                  "No data to display."
+                )}
+              </div>
+            )}
 
             <form
               className="flex flex-row w-11/12 mx-auto bg-gray-200 p-2 gap-x-2 mb-5 h-16"
@@ -610,8 +632,11 @@ const Chat = () => {
         </div>
       )}
 
-
-      <div className={`${isSidebar ? 'flex' : 'hidden'} fixed top-0 left-0 bottom-0  md:static md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100 z-50`}>
+      <div
+        className={`${
+          isSidebar ? "flex" : "hidden"
+        } fixed top-0 left-0 bottom-0  md:static md:flex flex-col h-screen w-72 overflow-y-auto bg-gray-100 z-50 md:z-0`}
+      >
         <div className="flex flex-row my-5 px-6 items-center justify-between w-full">
           <Link to={"/home"}>
             <BsHouse
@@ -623,7 +648,7 @@ const Chat = () => {
           <div
             className="flex flex-row"
             onClick={() => {
-              setMessages([])
+              setMessages([]);
             }}
           >
             <BiEdit
@@ -637,46 +662,61 @@ const Chat = () => {
           {previousChats.map((chat) => {
             return (
               <div
-                className={`w-11/12 my-1 mx-auto rounded-2xl ${currentChatId == chat.id ? 'bg-gray-300' : 'bg-transparent'} items-center p-2 cursor-pointer hover:bg-gray-300 truncate`}
-                onClick={() => {
+                className={`w-11/12 my-1 mx-auto rounded-2xl ${
+                  currentChatId == chat.id ? "bg-gray-300" : "bg-transparent"
+                } items-center p-2 cursor-pointer hover:bg-gray-300 flex flex-row justify-between`}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+
                   fetchMessages(chat.id);
                 }}
               >
-                {chat.title}
+                <h3 className="w-10/12 text-start truncate">{chat.title}</h3>
+                <button>
+                  <PiTrashFill
+                    className="text-red-600 cursor-pointer text-2xl"
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation();
+
+                      deleteChat(chat.id);
+                    }}
+                  ></PiTrashFill>
+                </button>
               </div>
             );
           })}
         </div>
       </div>
 
-
-
-      <div className="flex flex-col w-full h-screen md:w-11/12 lg:w-4/6 xl:w-3/6 mx-auto justify-center items-center relative pt-16">
+      <div className="flex flex-col w-full h-screen md:w-11/12 lg:w-5/6 xl:w-3/6 mx-auto justify-center items-center relative pt-16">
         <div className="flex flex-row items-center justify-between w-full absolute right-0 top-0 left-0 p-3 md:right-5 md:top-2">
-          {
-            screen.width < 768 && (
-              <button className="cursor-pointer" title="My profile" onClick={() => {
-                setisSidebar(true)
-              }}>
-                <BsJustifyLeft className="text-black text-5xl font-light"></BsJustifyLeft>
-              </button>
-            )
-          }
+          {screen.width < 768 && (
+            <button
+              className="cursor-pointer"
+              title="My profile"
+              onClick={() => {
+                setisSidebar(true);
+              }}
+            >
+              <BsJustifyLeft className="text-black text-5xl font-light"></BsJustifyLeft>
+            </button>
+          )}
 
+          {isSidebar && screen.width < 768 && (
+            <div className="fixed top-0 left-0 bottom-0 right-0 bg-black bg-opacity-50 z-40"></div>
+          )}
 
-          {
-            isSidebar && screen.width < 768 && (
-              <div className="fixed top-0 left-0 bottom-0 right-0 bg-black bg-opacity-50 z-40"></div>
-            )
-          }
-          
-          {
-            isSidebar && (
-              <button className="cursor-pointer z-50" title="My profile" onClick={() => {setisSidebar(false)}}>
-                <CgClose className="text-black text-5xl font-light"></CgClose>
-              </button>
-            )
-          }
+          {isSidebar && (
+            <button
+              className="cursor-pointer z-50"
+              title="My profile"
+              onClick={() => {
+                setisSidebar(false);
+              }}
+            >
+              <CgClose className="text-black text-5xl font-light"></CgClose>
+            </button>
+          )}
         </div>
 
         <div
@@ -685,8 +725,9 @@ const Chat = () => {
         >
           {messages.length == 0 && (
             <h3 className="text-4xl text-black my-10 text-center">
-              Hello {name && (name.split(" ").length > 1 ? name.split(" ")[1] : name)},
-              What can i help you with today?
+              Hello{" "}
+              {name && (name.split(" ").length > 1 ? name.split(" ")[1] : name)}
+              , What can i help you with today?
             </h3>
           )}
           {

@@ -135,6 +135,7 @@ const Signup = () => {
         localStorage.setItem("user", JSON.stringify(res.user));
         toast.info("Account created successfully");
         localStorage.setItem("token", res.token);
+        setRequestLoading(false);
 
         // Add a little delay before redirecting to ensure user sees account created notification
         setTimeout(() => {
@@ -173,7 +174,7 @@ const Signup = () => {
   };
 
   const handleGoogleSignupFailure = () => {
-    toast.error("Login Failed");
+    toast.error("Login Failed.");
   };
 
   useEffect(() => {

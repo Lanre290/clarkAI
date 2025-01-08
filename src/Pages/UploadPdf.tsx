@@ -590,7 +590,6 @@ const UploadPdf = () => {
                   <option value="900">15 Minutes</option>
                   <option value="1800">30 Minutes</option>
                   <option value="3600">1 hour</option>
-                  <option value="7200">2 hour</option>
                 </select>
                 <select
                   onInput={(e: any) => {
