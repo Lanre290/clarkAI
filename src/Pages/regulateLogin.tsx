@@ -22,7 +22,7 @@ const UseCheckUserSession: React.FC<{ children?: React.ReactNode }> = ({
         (location.pathname as string) != "/signup")
     ) {
       if (location.pathname == "/login") {
-        navigate("/");
+        navigate("/login");
       } else if (location.pathname == "/signup") {
         navigate("/signup");
       }
