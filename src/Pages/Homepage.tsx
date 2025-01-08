@@ -15,6 +15,7 @@ import {
 } from "react-icons/bs";
 import { BiLinkExternal, BiTrim } from "react-icons/bi";
 import Faq from "react-faq-component";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const faqData = {
@@ -81,12 +82,12 @@ const HomePage = () => {
               </a>
             </div>
 
-            <a href={"/signup"}>
+            <Link to={"/signup"}>
               <button className="w-44 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-white h-12 gap-x-3">
               <BiLinkExternal className="text-black"></BiLinkExternal>
                 Get started
               </button>
-            </a>
+            </Link>
           </div>
 
           <div className="flex flex-col md:mt-44 mx-auto items-center justify-center gap-y-5 flex-grow">
@@ -101,12 +102,12 @@ const HomePage = () => {
             </Fade>
 
             <Fade direction="left" delay={2000}>
-              <a href={"/signup"}>
+              <Link to={"/signup"}>
                 <button className="w-56 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-white h-12 mt-16 gap-x-3">
                   Get started
                   <PiArrowRight className="text-black"></PiArrowRight>
                 </button>
-              </a>
+              </Link>
             </Fade>
           </div>
         </div>
@@ -192,12 +193,12 @@ const HomePage = () => {
       </div>
 
 
-      <a href={"/signup"}>
+      <Link to={"/signup"}>
               <button className="w-44 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-black text-white h-12 gap-x-3 mx-auto mt-20 shadow-2xl">
                 <BiLinkExternal className="text-white"></BiLinkExternal>
                 Join Us
               </button>
-            </a>
+            </Link>
 
       <div className="w-ful mt-24 relative bg-center bg-cover home-bg" id="faq">
         <div className="top-0 bottom-0 flex flex-col md:flex-row  py-10 px-5 left-0 right-0 bg-black bg-opacity-70" style={{backdropFilter: 'blur(3px)'}}>
@@ -220,12 +221,12 @@ const HomePage = () => {
           © Copyright 2024 ClarkAI, Inc . All Rights Reserved
           </h3>
 
-          <a href={"/signup"}>
+          <Link to={"/signup"}>
               <button className="w-44 rounded-3xl cursor-pointer flex items-center justify-center text-2xl shadow-2xl bg-white h-12 gap-x-3">
                 <BiLinkExternal className="text-black"></BiLinkExternal>
                 Join Us
               </button>
-            </a>
+            </Link>
         </div>
         </div>
       </div>
