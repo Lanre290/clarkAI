@@ -327,8 +327,8 @@ const UploadPdf = () => {
   };
 
   const createQuiz = async () => {
+    const currentLang = document.documentElement.lang;
     try {
-      setGeneratingQuiz(true);
       if (!numberOfQuizQuestions) {
         toast.error("Select a valid number of quiz questions.");
         throw new Error("b");
@@ -338,6 +338,13 @@ const UploadPdf = () => {
         toast.error("Select a valid quiz duration.");
         throw new Error("b");
       }
+
+      if(currentLang !== 'en'){
+        toast.error("Quiz is only available in english.");
+        throw new Error('b');
+      }
+      
+      setGeneratingQuiz(true);
 
       const model = genAI.getGenerativeModel({ model: geminiModel });
       const result_ = await model.generateContent([
@@ -395,7 +402,6 @@ const UploadPdf = () => {
     } catch (error: any) {
       if (error.message != "b") {
         setGeneratingQuiz(false);
-        console.error(error);
         toast.error("Error generating quiz. please try again.");
       }
     }
@@ -432,7 +438,6 @@ const UploadPdf = () => {
 
     result.questions = array;
     result.correct_questions = correctQuestions;
-    console.log(result);
 
     setQuizResult(result);
     setQuizExplanationUI(true);

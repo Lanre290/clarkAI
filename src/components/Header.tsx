@@ -7,7 +7,6 @@ const Header = () => {
   const { user } = useUser();
   const [isPremium, setIsPremium] = useState(true);
   const translateRef = useRef<HTMLDivElement>(null);
-  const [isAppLoaded, setIsAppLoaded] = useState(false);
   const [headerTopMargin, setHeaderTopMargin] = useState("0px");
   const headerElement = useRef(null);
 
