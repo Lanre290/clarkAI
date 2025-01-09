@@ -699,9 +699,9 @@ const UploadPdf = () => {
                 ))}
               </div>
 
-              <div className="flex flex-col md:flex-row md:justify-between mt-10">
+              <div className="flex flex-col md:flex-row md:justify-between mt-10 gap-2">
                 <button
-                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
+                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer mx-auto md:mx-0 hover:bg-gray-200"
                   onClick={() =>
                     currentQuestion > 0 &&
                     setCurrentQuestion(currentQuestion - 1)
@@ -710,7 +710,7 @@ const UploadPdf = () => {
                   Previous Question
                 </button>
                 <button
-                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer hover:bg-gray-200"
+                  className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-white text-black border border-black rounded-2xl w-11/12 md:w-64 cursor-pointer mx-auto md:mx-0 hover:bg-gray-200"
                   onClick={() =>
                     currentQuestion < quizQuestions.length - 1 &&
                     setCurrentQuestion(currentQuestion + 1)
@@ -721,9 +721,9 @@ const UploadPdf = () => {
               </div>
             </div>
 
-            <div className="flex flex-row md:justify-end mt-10">
+            <div className="flex flex-row md:justify-end mt-10 w-full">
               <button
-                className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-black text-white rounded-2xl w-11/12 md:w-64 cursor-pointer"
+                className="flex flex-row gap-x-4 p-3 px-6 items-center justify-center bg-black text-white rounded-2xl w-11/12 md:w-64 cursor-pointer mx-auto md:mx-0"
                 onClick={submitQuiz}
               >
                 Submit Quiz
