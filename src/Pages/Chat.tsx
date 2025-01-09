@@ -58,6 +58,8 @@ const Chat = () => {
     useState<boolean>(false);
   const [currentChatId, setCurrentchatId] = useState<number | null>(null);
   const [isSidebar, setisSidebar] = useState(false);
+  const [isFetchingMessages, setIsFetchingMessages] = useState<boolean>(false);
+  const [fetchingPreviousChats, setFetchingPreviousChats] = useState<boolean>(true);
 
   const readButton = useRef<null | HTMLButtonElement>(null);
   const { user, setUser } = useUser();
@@ -68,6 +70,7 @@ const Chat = () => {
   const token = localStorage.getItem("token");
 
   const fetchPreviousChats = async () => {
+    setFetchingPreviousChats(true)
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/chats`,
       {
@@ -82,8 +85,10 @@ const Chat = () => {
     if (response.ok) {
       let res = await response.json();
       setPreviousChats(res.data);
+      setFetchingPreviousChats(false)
     } else {
       toast.error("Error fetching user Data. Please login again.");
+      setFetchingPreviousChats(false);
     }
   };
 
@@ -371,6 +376,7 @@ const Chat = () => {
     setisSidebar(false);
     setIsTyping(false);
     setCurrentchatId(id);
+    setIsFetchingMessages(true);
     setMessages([]);
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/messages/${id}`,
@@ -386,6 +392,7 @@ const Chat = () => {
     if (response.ok) {
       let res = await response.json();
       setMessages(res.data);
+    setIsFetchingMessages(false);
       setTimeout(async () => {
         scrollToBottom();
         const AISuggestedQuestion = suggestQuestion([JSON.stringify(res.data)]);
@@ -397,6 +404,7 @@ const Chat = () => {
       }, 700);
     } else {
       toast.error("Unable to load conversation.");
+      setIsFetchingMessages(false);
     }
   };
 
@@ -483,6 +491,14 @@ const Chat = () => {
     <div className="w-full h-full flex flex-row chat-page">
       {isListening && <Listening></Listening>}
       {isLoading && <Loading small={false}></Loading>}
+
+      {
+        isFetchingMessages && (
+          <div className="fixed top-10 left-1/2 right-1/2 w-16 h-16 shadow-2xl bg-white flex items-center justify-center rounded-full">
+            <Loading small></Loading>
+          </div>
+        )
+      }
 
       {isLinkLayout && (
         <div className="fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -659,6 +675,13 @@ const Chat = () => {
           </div>
         </div>
         <div className="flex flex-col w-full">
+          {
+            fetchingPreviousChats && (
+              <div className="w-full flex justify-center items-center">
+                <Loading small/>
+              </div>
+            )
+          }
           {previousChats.map((chat) => {
             return (
               <div
@@ -723,7 +746,7 @@ const Chat = () => {
           className="w-full chat-inner-area relative h-full flex flex-col justify-center"
           ref={chatArea}
         >
-          {messages.length == 0 && (
+          {messages.length == 0 && !currentChatId && (
             <h3 className="text-4xl text-black my-10 text-center">
               Hello{" "}
               {name && (name.split(" ").length > 1 ? name.split(" ")[1] : name)}
