@@ -16,6 +16,7 @@ import Scanner from "./Pages/Scanner";
 import UseCheckUserSession from "./Pages/regulateLogin";
 import HomePage from "./Pages/Homepage";
 import ForgotPassword from "./Pages/ForgotPassword";
+import NotFound from "./Pages/NotFound";
 
 export const geminiModel = import.meta.env.VITE_GEMINI_MODEL;
 
@@ -36,6 +37,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </UseCheckUserSession>
       </Router>

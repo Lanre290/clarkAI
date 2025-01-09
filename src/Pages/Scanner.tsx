@@ -23,7 +23,7 @@ const Scanner = () => {
   } | null>(null);
   const [isSolved, setIsSolved] = useState<boolean>(false);
 
-  const queryText = `You are a ai study buddy. This is an image, parse it to it's digital format and help your student with this? keep a slow student in mind while explaining. You must solve and explain everything completely in one response Ignore the fact that it is an OCR file, don't mention that part.`;
+  const queryText = `You are a ai study buddy. This is an image, parse it to it's digital format and help your student with this? keep a slow student in mind while explaining. You must solve and explain everything completely in one response Ignore the fact that it is an OCR file, don't mention that part. You must respond in pure markdown format.`;
 
   // Convert file to base64 and MIME type
   const generativeFile = async (file: File) => {
@@ -46,7 +46,7 @@ const Scanner = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 20 * 1024 * 1024) {
       toast.error(
         "File is too large. Please upload an image smaller than 5MB."
       );
