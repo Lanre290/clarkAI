@@ -6,7 +6,6 @@ import {
   BiPause,
   BiPlay,
   BiStop,
-  BiTrash,
   BiVolumeFull,
 } from "react-icons/bi";
 import {

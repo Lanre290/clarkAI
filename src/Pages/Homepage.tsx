@@ -215,7 +215,7 @@ const HomePage = () => {
           </div>
 
           <h3 className="text-center text-white my-5">
-            Made with 💝 by Team Zathura
+            Made with 💝 by Team Clark
           </h3>
           <h3 className="text-center text-white">
           © Copyright 2024 ClarkAI, Inc . All Rights Reserved
