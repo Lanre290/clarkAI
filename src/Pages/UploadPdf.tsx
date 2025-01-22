@@ -529,14 +529,14 @@ const UploadPdf = () => {
         </div>
       )}
 
-      {isQuizTimeUp && (
+      {isQuizTimeUp && quizUi && (
         <div
           className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col"
           style={{ zIndex: 105 }}
         >
           <div className="w-full md:w-96 bg-white rounded-3xl p-8 flex flex-col justify-center items-center gap-y-5">
             <CgClose className="text-7xl text-red-600 mx-auto"></CgClose>
-            <h3 className="text-3xl">Your timeis Up!!!</h3>
+            <h3 className="text-3xl">Your time is Up!!!</h3>
 
             <button
               className="w-11/12 md:w-52 bg-black text-white h-12 rounded-2xl"

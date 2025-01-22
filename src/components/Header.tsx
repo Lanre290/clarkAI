@@ -56,7 +56,7 @@ const Header = () => {
         console.error("Error adding Google Translate script:", error);
       }
     };
-  
+  5
     const initGoogleTranslate = () => {
       try {
         (window as any).googleTranslateElementInit = () => {
