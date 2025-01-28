@@ -375,3 +375,9 @@ iframe{
   font-size: 22px !important;
   font-weight: 100;
 }
+
+
+h3.result-h3 div.gap-y-2{
+  height: 100%;
+  overflow-y: auto;
+}

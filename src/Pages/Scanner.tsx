@@ -5,11 +5,10 @@ import { loadingAnimationOption } from "./UploadPdf";
 import Lottie from "react-lottie";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
-import { BsHouse } from "react-icons/bs";
 import ReactMarkdown from "react-markdown";
-import { CgClose } from "react-icons/cg";
 import { geminiModel } from "../App";
+import { BiEdit } from "react-icons/bi";
+import { CgClose } from "react-icons/cg";
 
 const Scanner = () => {
   const API_KEY = import.meta.env.VITE_GEMINI_KEY;
@@ -21,7 +20,8 @@ const Scanner = () => {
     data: string;
     mimeType: string;
   } | null>(null);
-  const [isSolved, setIsSolved] = useState<boolean>(false);
+  const [imageURL, setImageURL] = useState<string>('');
+  const [showImageFullscreen, setShowImageFullscreen] = useState(false);
 
   const queryText = `You are a ai study buddy. This is an image, parse it to it's digital format and help your student with this? keep a slow student in mind while explaining. You must solve and explain everything completely in one response Ignore the fact that it is an OCR file, don't mention that part. You must respond in pure markdown format.`;
 
@@ -45,6 +45,8 @@ const Scanner = () => {
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    setImageURL(URL.createObjectURL(file));
 
     if (file.size > 20 * 1024 * 1024) {
       toast.error(
@@ -84,14 +86,13 @@ const Scanner = () => {
 
       const text = await result.response.text();
       setResultText(text);
-      setIsSolved(true);
     } catch (error) {
       setResultText("Unable to analyze the image. Please try again.");
     }
   };
 
   return (
-    <div className="overflow-y-hidden pt-20">
+    <div className="overflow-hidden pt-20">
       <Header />
       {isLoading && (
         <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center flex-col z-50">
@@ -104,46 +105,74 @@ const Scanner = () => {
         </div>
       )}
 
-     
-      <Link to={"/home"} className="cursor-pointer w-24 flex m-5">
-        <BsHouse className="text-black text-5xl"></BsHouse>
-      </Link>
+      <div className="flex flex-row w-full h-screen overflow-hidden justify-center items-center">
+        {
+          imageURL == '' && (
+            <div className="flex justify-center items-center w-full md:w-min px-8 border-r border-black h-screen">
+              <div className="w-11/12 md:w-96 h-96 rounded-3xl border border-black p-16 -mt-16">
+                <div className="flex flex-col bg-black relative justify-center items-center rounded-3xl h-full w-full">
+                  <h3 className="text-center text-white text-2xl">
+                    Upload the image of your question
+                  </h3>
+                  <input
+                    type="file"
+                    className="absolute top-0 left-0 bottom-0 right-0 opacity-0 z-50 rounded-3xl"
+                    onInput={handleImageChange}
+                    accept="image/*"
+                  />
+                </div>
+              </div>
+            </div>
+          )
+        }
 
-      <div className="flex flex-col w-full h-screen overflow-hidden justify-center items-center">
-        <div className="w-11/12 md:w-96 h-96 rounded-3xl border border-black p-16 -mt-16">
-          <div className="flex flex-col bg-black relative justify-center items-center rounded-3xl h-full w-full">
-            <h3 className="text-center text-white text-2xl">
-              Upload the image of your question
-            </h3>
-            <input
-              type="file"
-              className="absolute top-0 left-0 bottom-0 right-0 opacity-0 z-50 rounded-3xl"
-              onChange={handleImageChange}
-              accept="image/*"
-            />
-          </div>
+        {
+          imageURL != '' && (
+            <div className="flex justify-center items-center w-full md:w-min px-8 border-r border-black h-screen">
+              <div className="w-96 h-96 relative min-w-80 bg-gray-400">
+                <img src={imageURL} alt="image" className="w-full h-full rounded-2xl object-contain cursor-pointer" onClick={() => {setShowImageFullscreen(true)}}/>
+
+                <div className="absolute bottom-2 right-2 bg-white w-16 h-16 rounded-full flex items-center justify-center">
+                  <div className="relative justify-center items-center rounded-full h-16 w-16 z-50">
+                    <button className="w-16 h-16 cursor-pointer rounded-full flex items-center justify-center">
+                      <BiEdit className="text-2xl text-black "></BiEdit>
+                    </button>
+                    <input
+                      type="file"
+                      className="absolute top-0 left-0 bottom-0 right-0 opacity-0 z-50 rounded-full cursor-pointer"
+                      onInput={handleImageChange}
+                      accept="image/*"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+
+        <div className="flex flex-grow pt-24 overflow-y-hidden h-screen pb-24">
+          <h3 className="text-black text-2xl px-3 overflow-y-auto h-full result-h3">
+            <ReactMarkdown className='gap-y-2'>{resultText}</ReactMarkdown>
+          </h3>
         </div>
       </div>
 
-      {isSolved && (
-        <Fade direction="up" duration={700} className="flex flex-col gap-y-3 fixed h-4/5 bottom-0 left-0 right-0 rounded-tr-3xl rounded-tl-3xl bg-white z-50 overflow-y-auto shadow-2xl">
-          <div className="flex flex-col py-10">
-          <div className="flex justify-end h-24 relative">
-            <button className="w-14 h-14 text-black z-50 absolute top-0 right-0">
-              <CgClose
-                className="text-black text-5xl cursor-pointer"
-                onClick={() => {
-                  setIsSolved(false);
-                }}
-              />
+      {
+        showImageFullscreen && (
+          <div className="fixed top-0 bottom-0 right-0 left-0 bg-black bg-opacity-50 flex items-center justify-center py-2 z-50" onClick={(e) => {
+            e.stopPropagation();
+            setShowImageFullscreen(false);
+          }}>
+            <button className="w-16 h-16 rounded-full flex items-center justify-center fixed top-10 right-10" onClick={() => {
+              setShowImageFullscreen(false);
+            }}>
+              <CgClose className="text-2xl text-black"></CgClose>
             </button>
+            <img src={imageURL} alt="image" className="h-full object-cover cursor-pointer" onClick={(e) => {e.stopPropagation()}}/>
           </div>
-          <h3 className="text-black text-2xl p-5 pb-20">
-            <ReactMarkdown className='gap-y-2'>{resultText}</ReactMarkdown>
-          </h3>
-          </div>
-        </Fade>
-      )}
+        )
+      }
     </div>
   );
 };
