@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { geminiModel } from "../App";
 import { BiEdit } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
+import rehypeRaw from "rehype-raw";
 
 const Scanner = () => {
   const API_KEY = import.meta.env.VITE_GEMINI_KEY;
@@ -153,7 +154,7 @@ const Scanner = () => {
 
         <div className="flex flex-grow pt-24 overflow-y-hidden h-screen pb-24">
           <h3 className="text-black text-2xl px-3 overflow-y-auto h-full result-h3">
-            <ReactMarkdown className='gap-y-2'>{resultText}</ReactMarkdown>
+            <ReactMarkdown className='gap-y-2' rehypePlugins={[rehypeRaw]}>{resultText}</ReactMarkdown>
           </h3>
         </div>
       </div>
